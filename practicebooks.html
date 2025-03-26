@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Practice Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Added Back Button Styles */
+    .back-button {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 3;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .back-button {
+        top: 1rem;
+        left: 1rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+    }
+    /* End of Back Button Styles */
+
+    :root {
+      --primary: #6366f1;
+      --secondary: #ec4899;
+      --accent: #3b82f6;
+      --background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #2a2a2a);
+      --surface: rgba(255, 255, 255, 0.05);
+      --text: #f8fafc;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+      animation: fall linear infinite;
+      filter: blur(1px);
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100vh); }
+      100% { transform: translateY(100vh); }
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      padding: 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .title {
+      font-size: 3.5rem;
+      text-align: center;
+      margin: 2rem 0;
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.3));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .search-container {
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 100%;
+      padding: 1rem 3.5rem;
+      border: none;
+      border-radius: 50px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-container input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      opacity: 0.7;
+    }
+
+    .box-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+      padding: 2rem 0;
+    }
+
+    .box {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      border-color: var(--primary);
+    }
+
+    .image-container {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+
+    .box:hover img {
+      transform: scale(1.05);
+    }
+
+    .box h3 {
+      margin: 0 0 1rem;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .button:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .fab {
+      position: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--primary);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+      transition: all 0.3s ease;
+      z-index: 100;
+      border: none;
+      cursor: pointer;
+    }
+
+    .fab:hover {
+      transform: scale(1.1);
+    }
+
+    #backToTop {
+      bottom: 2rem;
+      right: 2rem;
+    }
+
+    #tgIcon {
+      bottom: 8rem;
+      right: 2rem;
+      background: #0088cc;
+    }
+
+    .tg-logo {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 1.5rem;
+      }
+
+      .title {
+        font-size: 2.2rem;
+        margin: 1rem 0;
+      }
+
+      .search-container {
+        width: 95%;
+        margin: 1.5rem auto;
+      }
+
+      .search-container input {
+        padding: 0.9rem 3rem;
+        font-size: 1rem;
+      }
+
+      .search-icon {
+        left: 1.2rem;
+        font-size: 1rem;
+      }
+
+      .box-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1rem 0;
+      }
+
+      .box {
+        padding: 1.2rem;
+      }
+
+      .image-container {
+        height: 180px;
+      }
+
+      .button-container {
+        gap: 0.6rem;
+      }
+
+      #backToTop {
+        bottom: 6rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
+      }
+
+      #tgIcon {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+      }
+
+      .tg-logo {
+        width: 22px;
+        height: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-button">←</a>
+  <div id="particles"></div>
+
+  <div class="content">
+    <h1 class="title">Practice Books</h1>
+    
+    <div class="search-container">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search" placeholder="Search books..." />
+    </div>
+    
+    <div class="box-container">
+      <div class="box" data-title="HC Verma">
+        <div class="image-container">
+          <img src="https://www.mpdbooks.in/wp-content/uploads/2020/05/DD-1.jpg" alt="Book Cover">
+        </div>
+        <h3>HC Verma</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/laVq" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+      <div class="box" data-title="SL Arora">
+        <div class="image-container">
+          <img src="https://cdn01.sapnaonline.com/product_media/9788177002218/md_9788177002218_300720241137584.jpg" alt="Book Cover">
+        </div>
+        <h3>SL Arora</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/OFB3yuMS" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+    <div class="box" data-title="IE Irodov">
+        <div class="image-container">
+          <img src="https://m.media-amazon.com/images/I/51L5I0zZLbL.jpg" alt="Book Cover">
+        </div>
+        <h3>IE Irodov</h3>
+        <div class="button-container">
+          <a href=https://bharatlinks.com/WORlyM" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+<div class="box" data-title="RD Sharma">
+        <div class="image-container">
+          <img src="https://m.media-amazon.com/images/I/91Gb3OCDHBL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+        </div>
+        <h3>RD Sharma</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/CeTkLQ" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+<div class="box" data-title="MS Chauhan NEET + JEE  Org Chem">
+        <div class="image-container">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTrw0QtnMl-V2UoRhoPrcZP-jQPNs23unjQ&s" alt="Book Cover">
+        </div>
+        <h3>MS Chauhan NEET + JEE  Org Chem</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/Rqjvq90" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+<div class="box" data-title="Black Book For JEE Mains & Advance">
+        <div class="image-container">
+          <img src="https://m.media-amazon.com/images/I/91JLYxqHr+L._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+        </div>
+        <h3>Black Book For JEE Mains & Advance</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/b6rNxXNH" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+
+<div class="box" data-title="OP Tandon Chemistry Books">
+        <div class="image-container">
+          <img src="https://m.media-amazon.com/images/I/516m5ChS9oL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+        </div>
+        <h3>OP Tandon Chemistry Books</h3>
+        <div class="button-container">
+          <a href="https://bharatlinks.com/83slqLH" target="_blank" class="button">Get 📥</a>
+          <a href="https://www.dmeth.com" target="_blank" class="button">Download Method ⬇️</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <button class="fab" id="backToTop">↑</button>
+  <a class="fab" id="tgIcon" href="https://t.me/Cbsebooks10th" target="_blank">
+    <svg class="tg-logo" viewBox="0 0 24 24">
+      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+    </svg>
+  </a>
+
+  <script>
+    function createParticles() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 150; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = `${Math.random() * 100}%`;
+        const size = 2 + Math.random() * 6;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDuration = `${5 + Math.random() * 10}s`;
+        particle.style.animationDelay = `-${Math.random() * 10}s`;
+        container.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    const searchInput = document.getElementById('search');
+    const boxes = document.querySelectorAll('.box');
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      boxes.forEach(box => {
+        const title = box.getAttribute('data-title').toLowerCase();
+        box.style.display = title.includes(query) ? 'block' : 'none';
+      });
+    });
+
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>

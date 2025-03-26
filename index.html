@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EBooks 11th By EFK</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="https://ebooksofficial.netlify.app/ebookpic.jpg">
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Animated Title */
+    .title {
+      text-align: center;
+      margin: 4rem 0;
+      background: linear-gradient(45deg, #ff6b6b, #a855f7, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+      font-size: 3.5rem;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    @keyframes glow {
+      0%, 100% { 
+        text-shadow: 0 0 10px rgba(168, 85, 247, 0.3),
+                     0 0 20px rgba(168, 85, 247, 0.2);
+      }
+      50% { 
+        text-shadow: 0 0 25px rgba(168, 85, 247, 0.4),
+                     0 0 45px rgba(168, 85, 247, 0.3);
+      }
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .category {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .category:hover {
+      transform: translateY(-5px);
+      border-color: #a855f7;
+    }
+
+    .category img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .category h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .category p {
+      color: #cccccc;
+      margin-bottom: 1.5rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, #a855f7, #3b82f6);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .btn:hover {
+      opacity: 0.95;
+      transform: scale(1.02);
+    }
+
+    /* Modern FAQ Section */
+    .faq-section {
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      padding: 2.5rem;
+      border-radius: 20px;
+      margin: 5rem auto;
+      max-width: 900px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .faq-section h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 2.5rem;
+      font-size: 2.2rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .collapsible-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .collapsible-item {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .collapsible-item:hover {
+      border-color: #a855f7;
+    }
+
+    .collapsible-header {
+      width: 100%;
+      padding: 1.25rem 2rem;
+      background: transparent;
+      color: #fff;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .collapsible-header::after {
+      content: "\f107";
+      font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #a855f7;
+    }
+
+    .collapsible-item.active .collapsible-header::after {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0 2rem;
+      color: #cccccc;
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+    }
+
+    .collapsible-item.active .collapsible-content {
+      max-height: 500px;
+      padding: 0 2rem 1.5rem;
+    }
+
+    /* Telegram Icon */
+    .telegram-icon {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #0088cc;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.75rem;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1000;
+    }
+
+    .telegram-icon:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 0 8px 24px rgba(0, 136, 204, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1.5rem;
+      }
+
+      .title {
+        font-size: 2.5rem;
+        margin: 3rem 0;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .faq-section {
+        padding: 1.5rem;
+        margin: 3rem auto;
+      }
+
+      .collapsible-header {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+      }
+
+      .telegram-icon {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">EBooks 11th By EFK</h1>
+    
+    <div class="grid">
+      <!-- Question Bank -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/STNXJZ8qTs-S9jNSJh8dmg" alt="Question Bank" loading="lazy">
+        <h2>Question Bank 📚</h2>
+        <p>Comprehensive collection of practice questions</p>
+        <button class="btn">Access Now →</button>
+      </div>
+
+      <!-- Previous Year Questions -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/sJ9vI7Q1SwGbR7b64WNihg" alt="PYQ" loading="lazy">
+        <h2>Previous Year Questions 📖</h2>
+        <p>Last 10 years' solved question papers</p>
+        <button class="btn">Get Papers 📝</button>
+      </div>
+
+      <!-- Sample Papers -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/qflgRm91Quu7PJfhAPpKtA" alt="Sample Papers" loading="lazy">
+        <h2>Sample Papers 📄</h2>
+        <p>Model test papers with solutions</p>
+        <button class="btn">Download 📥</button>
+      </div>
+
+      <!-- Test Series -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/UApEfljOQLiEBlVz42u2ZQ" alt="Test Series" loading="lazy">
+        <h2>Test Series 📝</h2>
+        <p>Weekly mock tests with analytics</p>
+        <button class="btn">Join Now 👉</button>
+      </div>
+
+      <!-- Competency Based -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/ds53JTikRWmzd0BIcCkXeg" alt="Competency" loading="lazy">
+        <h2>Competency Based 🎯</h2>
+        <p>Skill-focused learning material</p>
+        <button class="btn">Explore 🔍</button>
+      </div>
+
+      <!-- Practice Books -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/MmX22lCISn2bR0SrvAIZ6g" alt="Practice" loading="lazy">
+        <h2>Practice Books 📒</h2>
+        <p>Subject-wise practice workbooks</p>
+        <button class="btn">Get Books 📚</button>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <div class="collapsible-group">
+        <div class="collapsible-item">
+          <button class="collapsible-header">How to download books?</button>
+          <div class="collapsible-content">
+            <p>Go to the specific category of the books you are looking for. Then click on the link provided for that specific book. Follow the instructions given on that page and download your book. It's that simple.</p>
+          </div>
+        </div>
+
+        <div class="collapsible-item">
+          <button class="collapsible-header">Why are most materials on your website free?</button>
+          <div class="collapsible-content">
+            <p>We believe that quality education should be accessible to everyone. By providing free study materials, we aim to help students achieve academic success without financial barriers.</p>
+          </div>
+        </div>
+
+        <div class="collapsible-item">
+          <button class="collapsible-header">How can I request specific materials not available on the website?</button>
+          <div class="collapsible-content">
+            <p>If you're looking for something specific, you can contact us through the Contact Us section or email us directly. We'll do our best to add it to our collection.</p>
+          </div>
+        </div>
+
+        <div class="collapsible-item">
+          <button class="collapsible-header">I am facing human verification problem in the link when I am opening the link.</button>
+          <div class="collapsible-content">
+            <p>🟢 The issue is not there in your normal browser (Google Chrome, etc.)<br>
+            1. Either copy the website link [ebooksofficial.netlify.app] and paste it in your browser.<br>
+            2. Or search "Ebooks official" on your browser and you will find our website.<br>
+            3. Or go to your Telegram settings and disable the "in-app browser" so every time the website will open in Google Chrome.<br><br>
+            (You can do either of the things to solve the issue.)<br>
+            If the issue still persists, please contact us using the bot.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Icon -->
+  <a href="https://t.me/Cbsebooks10th" class="telegram-icon" target="_blank">
+    <i class="fab fa-telegram-plane"></i>
+  </a>
+
+  <!-- Scripts -->
+  <script>
+    // Navigation Script
+    document.addEventListener("DOMContentLoaded", function() {
+      const links = [
+        "qb.html",         // Question Bank
+        "pyq.html",        // Previous Year Questions
+        "sqp.html",        // Sample Papers
+        "testseries.html", // Test Series
+        "competency.html", // Competency Based
+        "practicebooks.html" // Practice Books
+      ];
+
+      document.querySelectorAll(".btn").forEach((btn, index) => {
+        btn.addEventListener("click", function() {
+          window.location.href = links[index];
+        });
+      });
+    });
+
+    // FAQ Toggle Script
+    document.querySelectorAll(".collapsible-header").forEach(button => {
+      button.addEventListener("click", function() {
+        const item = this.parentElement;
+        item.classList.toggle("active");
+        
+        // Close other items
+        document.querySelectorAll(".collapsible-item").forEach(otherItem => {
+          if(otherItem !== item) {
+            otherItem.classList.remove("active");
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
