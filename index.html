@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EBooks 11th By EFK</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,7 +14,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       background: #0a0a0a;
       color: #ffffff;
@@ -22,17 +21,113 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
-
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
     }
-
-    /* Animated Title */
+    /* Navigation Bar */
+    header {
+      width: 100%;
+      background: #1f1f1f;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1100;
+      animation: slideDown 0.8s ease-out;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); }
+      to { transform: translateY(0); }
+    }
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem 2rem;
+    }
+    nav .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #ff6b6b, #a855f7, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #ffffff;
+      font-size: 1rem;
+      position: relative;
+      transition: color 0.3s;
+    }
+    nav ul li a:hover {
+      color: #a855f7;
+    }
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: #a855f7;
+      left: 0;
+      bottom: -4px;
+      transition: width 0.3s;
+    }
+    nav ul li a:hover::after {
+      width: 100%;
+    }
+    /* Hamburger Menu Styles */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background: #ffffff;
+      transition: all 0.3s ease;
+    }
+    /* Mobile Menu */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: #1f1f1f;
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      padding: 1rem 2rem;
+      animation: fadeInDown 0.5s ease forwards;
+      z-index: 1050;
+    }
+    .mobile-menu a {
+      text-decoration: none;
+      color: #ffffff;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      transition: color 0.3s;
+    }
+    .mobile-menu a:hover {
+      color: #a855f7;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Title Styles */
     .title {
       text-align: center;
-      margin: 4rem 0;
+      margin: 6rem 0 4rem; /* extra top margin to compensate for the fixed navbar */
       background: linear-gradient(45deg, #ff6b6b, #a855f7, #3b82f6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -41,12 +136,10 @@
       letter-spacing: 1.5px;
       text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-15px); }
     }
-
     @keyframes glow {
       0%, 100% { 
         text-shadow: 0 0 10px rgba(168, 85, 247, 0.3),
@@ -57,7 +150,6 @@
                      0 0 45px rgba(168, 85, 247, 0.3);
       }
     }
-
     /* Grid Layout */
     .grid {
       display: grid;
@@ -65,7 +157,6 @@
       gap: 2rem;
       margin: 3rem 0;
     }
-
     .category {
       background: rgba(255, 255, 255, 0.05);
       border-radius: 15px;
@@ -74,12 +165,10 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
     .category:hover {
       transform: translateY(-5px);
       border-color: #a855f7;
     }
-
     .category img {
       width: 100%;
       height: 200px;
@@ -87,18 +176,15 @@
       border-radius: 10px;
       margin-bottom: 1rem;
     }
-
     .category h2 {
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
-
     .category p {
       color: #cccccc;
       margin-bottom: 1.5rem;
       font-family: 'Inter', sans-serif;
     }
-
     .btn {
       background: linear-gradient(45deg, #a855f7, #3b82f6);
       color: white;
@@ -111,13 +197,11 @@
       transition: all 0.3s ease;
       width: 100%;
     }
-
     .btn:hover {
       opacity: 0.95;
       transform: scale(1.02);
     }
-
-    /* Modern FAQ Section */
+    /* FAQ Section */
     .faq-section {
       background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
       padding: 2.5rem;
@@ -127,7 +211,6 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
     }
-
     .faq-section h2 {
       color: #fff;
       text-align: center;
@@ -137,24 +220,20 @@
       font-weight: 700;
       letter-spacing: -0.5px;
     }
-
     .collapsible-group {
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
-
     .collapsible-item {
       background: rgba(0, 0, 0, 0.25);
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
     }
-
     .collapsible-item:hover {
       border-color: #a855f7;
     }
-
     .collapsible-header {
       width: 100%;
       padding: 1.25rem 2rem;
@@ -170,7 +249,6 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .collapsible-header::after {
       content: "\f107";
       font-family: "Font Awesome 5 Free";
@@ -178,11 +256,9 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       color: #a855f7;
     }
-
     .collapsible-item.active .collapsible-header::after {
       transform: rotate(180deg);
     }
-
     .collapsible-content {
       max-height: 0;
       overflow: hidden;
@@ -192,12 +268,95 @@
       font-family: 'Inter', sans-serif;
       line-height: 1.6;
     }
-
     .collapsible-item.active .collapsible-content {
       max-height: 500px;
       padding: 0 2rem 1.5rem;
     }
-
+    /* Premium Animated Footer */
+    footer {
+      background: #1f1f1f;
+      padding: 3rem 1rem;
+      margin-top: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    footer::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(168,85,247,0.15), transparent);
+      animation: rotateBg 10s linear infinite;
+      z-index: 0;
+    }
+    @keyframes rotateBg {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .footer-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+    .footer-section {
+      flex: 1;
+      min-width: 220px;
+    }
+    .footer-section h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: #a855f7;
+    }
+    .footer-section p, .footer-section a {
+      font-size: 0.9rem;
+      color: #cccccc;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-section a:hover {
+      color: #ffffff;
+    }
+    .social-icons a {
+      margin-right: 0.8rem;
+      font-size: 1.2rem;
+      color: #cccccc;
+      transition: color 0.3s;
+    }
+    .social-icons a:hover {
+      color: #a855f7;
+    }
+    .newsletter input[type="email"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .newsletter button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background: linear-gradient(45deg, #a855f7, #3b82f6);
+      color: #ffffff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .newsletter button:hover {
+      background: #3b82f6;
+    }
+    .footer-bottom {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.8rem;
+      color: #777777;
+    }
     /* Telegram Icon */
     .telegram-icon {
       position: fixed;
@@ -216,53 +375,69 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 1000;
     }
-
     .telegram-icon:hover {
       transform: scale(1.1) rotate(5deg);
       box-shadow: 0 8px 24px rgba(0, 136, 204, 0.3);
     }
-
     /* Responsive Design */
     @media (max-width: 768px) {
-      .container {
-        padding: 1.5rem;
+      nav ul {
+        display: none;
       }
-
+      .hamburger {
+        display: flex;
+      }
       .title {
         font-size: 2.5rem;
-        margin: 3rem 0;
+        margin: 6rem 0 3rem;
       }
-
       .grid {
         grid-template-columns: 1fr;
         gap: 1.5rem;
       }
-
       .faq-section {
         padding: 1.5rem;
         margin: 3rem auto;
       }
-
       .collapsible-header {
         padding: 1rem 1.5rem;
         font-size: 1rem;
       }
-
-      .telegram-icon {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Navigation Bar -->
+  <header>
+    <nav>
+      <div class="logo">EBooks 11th</div>
+      <ul class="nav-links">
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#categories">Categories</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </header>
+
   <div class="container">
     <h1 class="title">EBooks 11th By EFK</h1>
     
-    <div class="grid">
+    <div id="categories" class="grid">
       <!-- Question Bank -->
       <div class="category">
         <img src="https://ideogram.ai/assets/image/lossless/response/STNXJZ8qTs-S9jNSJh8dmg" alt="Question Bank" loading="lazy">
@@ -313,7 +488,7 @@
     </div>
 
     <!-- FAQ Section -->
-    <div class="faq-section">
+    <div id="faq" class="faq-section">
       <h2>Frequently Asked Questions</h2>
       <div class="collapsible-group">
         <div class="collapsible-item">
@@ -322,21 +497,18 @@
             <p>Go to the specific category of the books you are looking for. Then click on the link provided for that specific book. Follow the instructions given on that page and download your book. It's that simple.</p>
           </div>
         </div>
-
         <div class="collapsible-item">
           <button class="collapsible-header">Why are most materials on your website free?</button>
           <div class="collapsible-content">
             <p>We believe that quality education should be accessible to everyone. By providing free study materials, we aim to help students achieve academic success without financial barriers.</p>
           </div>
         </div>
-
         <div class="collapsible-item">
           <button class="collapsible-header">How can I request specific materials not available on the website?</button>
           <div class="collapsible-content">
             <p>If you're looking for something specific, you can contact us through the Contact Us section or email us directly. We'll do our best to add it to our collection.</p>
           </div>
         </div>
-
         <div class="collapsible-item">
           <button class="collapsible-header">I am facing human verification problem in the link when I am opening the link.</button>
           <div class="collapsible-content">
@@ -349,8 +521,36 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> 
   </div>
+
+  <!-- Premium Animated Footer -->
+  <footer id="contact">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>About EBooks 11th</h3>
+        <p>We are dedicated to providing premium study materials and resources for students, ensuring that quality education is accessible for everyone.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <p><a href="#categories">Categories</a></p>
+        <p><a href="#faq">FAQ</a></p>
+        <p><a href="#contact">Contact</a></p>
+      </div>
+    
+     
+    <div class="footer-content" style="justify-content: center; margin-top: 2rem;">
+      <div class="social-icons">
+        <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 EBooks 11th By EFK. All Rights Reserved. Designed with passion by <a href="https://example.com" target="_blank">Your Company</a></p>
+    </div>
+  </footer>
 
   <!-- Telegram Icon -->
   <a href="https://t.me/Cbsebooks10th" class="telegram-icon" target="_blank">
@@ -359,7 +559,15 @@
 
   <!-- Scripts -->
   <script>
-    // Navigation Script
+    // Mobile Hamburger Toggle
+    const hamburger = document.getElementById("hamburger");
+    const mobileMenu = document.getElementById("mobile-menu");
+    hamburger.addEventListener("click", () => {
+      mobileMenu.style.display = mobileMenu.style.display === "flex" ? "none" : "flex";
+      hamburger.classList.toggle("open");
+    });
+
+    // Navigation Script for button clicks
     document.addEventListener("DOMContentLoaded", function() {
       const links = [
         "qb.html",         // Question Bank
@@ -369,7 +577,6 @@
         "competency.html", // Competency Based
         "practicebooks.html" // Practice Books
       ];
-
       document.querySelectorAll(".btn").forEach((btn, index) => {
         btn.addEventListener("click", function() {
           window.location.href = links[index];
@@ -382,7 +589,6 @@
       button.addEventListener("click", function() {
         const item = this.parentElement;
         item.classList.toggle("active");
-        
         // Close other items
         document.querySelectorAll(".collapsible-item").forEach(otherItem => {
           if(otherItem !== item) {
