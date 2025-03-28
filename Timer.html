@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔥 Pomodoro & JEE/NEET Countdown 🔥</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Montserrat:wght@700&family=Poppins:wght@700&family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Global Variables ---------- */
+    :root {
+      /* Aurora Dream Gradient for Light Mode */
+      --light-bg: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      --dark-bg: #121212;
+      --dark-text: #f2f2f2;
+      /* Accent Gradients */
+      --btn-gradient: linear-gradient(135deg, #6a11cb, #2575fc);
+      --streak-gradient: linear-gradient(135deg, #f7971e, #ffd200);
+      /* Neon Colors */
+      --neon-red: #ff073a;
+      --neon-blue: #00f3ff;
+      /* Progress Bar Colors */
+      --progress-start: var(--neon-red);
+      --progress-end: var(--streak-gradient);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--light-bg);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      transition: background 0.4s, color 0.4s;
+      overflow-x: hidden;
+      font-weight: bold;
+      min-height: 100vh;
+    }
+    body.dark {
+      background: var(--dark-bg);
+      color: var(--dark-text);
+    }
+    h1 {
+      /* Changed to Poppins */
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    /* ---------- Dark/Light Mode Toggle (Bottom Right) ---------- */
+    .mode-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--btn-gradient);
+      border: none;
+      border-radius: 25px;
+      padding: 10px 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.2s;
+      z-index: 100;
+    }
+    .mode-toggle:hover {
+      transform: scale(1.05);
+    }
+    /* ---------- Container Styles ---------- */
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 30px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      transition: background 0.4s;
+    }
+    body.dark .container {
+      background: #222;
+    }
+    /* ---------- Pomodoro Timer Section ---------- */
+    #pomodoro-container .big-timer {
+      font-size: 5rem;
+      letter-spacing: 3px;
+      margin: 30px 0;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+    #pomodoro-container .buttons {
+      margin: 20px 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    #pomodoro-container button {
+      background: var(--btn-gradient);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 0 8px;
+      transition: background 0.3s, transform 0.2s;
+      flex-shrink: 0;
+    }
+    #pomodoro-container button:hover {
+      transform: scale(1.03);
+    }
+    .info-card {
+      background: #fff;
+      color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      font-size: 1rem;
+      line-height: 1.5;
+      text-align: left;
+    }
+    body.dark .info-card {
+      background: #2c2c2c;
+      color: var(--dark-text);
+    }
+    /* ---------- Countdown Timer Section ---------- */
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .time-box {
+      background: #222;
+      color: #fff;
+      padding: 15px 20px;
+      font-size: 2.5rem;
+      border-radius: 8px;
+      text-align: center;
+      font-family: 'Orbitron', sans-serif;
+      box-shadow: 0 0 10px var(--neon-red);
+      transition: transform 0.3s;
+      min-width: 100px;
+    }
+    .time-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px var(--neon-red);
+    }
+    .time-label {
+      font-size: 1rem;
+      margin-top: 5px;
+      color: var(--neon-blue);
+      text-shadow: 0 0 10px var(--neon-blue);
+    }
+    /* ---------- Progress Bar ---------- */
+    .progress-container {
+      height: 20px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+      margin: 30px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--progress-start), var(--progress-end));
+      transition: width 1s ease-in-out;
+      animation: progressGlow 2s infinite;
+      box-shadow: 0 0 10px var(--progress-end);
+    }
+    @keyframes progressGlow {
+      0% { filter: brightness(1); box-shadow: 0 0 10px var(--progress-end); }
+      50% { filter: brightness(1.5); box-shadow: 0 0 20px var(--progress-end); }
+      100% { filter: brightness(1); box-shadow: 0 0 10px var(--progress-end); }
+    }
+    /* ---------- Motivational Quotes (Fade Effect) ---------- */
+    .quote {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin: 15px 0;
+      text-align: center;
+      opacity: 1;
+      transition: opacity 0.8s ease;
+    }
+    /* ---------- Streak Counter ---------- */
+    .streak {
+      background: var(--streak-gradient);
+      padding: 10px 20px;
+      border-radius: 20px;
+      margin-top: 10px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.2rem;
+      color: #000;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    }
+    /* ---------- Stream Selection ---------- */
+    .stream-btn {
+      background: var(--btn-gradient);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0 10px;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+    .stream-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px var(--btn-gradient);
+    }
+    .stream-btn.active {
+      background: var(--neon-green);
+      color: #000;
+      box-shadow: 0 0 20px var(--neon-green);
+    }
+    /* ---------- Responsive Design ---------- */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      .container {
+        padding: 25px;
+      }
+      #pomodoro-container .big-timer {
+        font-size: 4rem;
+      }
+      .time-box {
+        font-size: 2rem;
+        padding: 12px 15px;
+        min-width: 85px;
+      }
+      .stream-btn {
+        margin: 8px;
+        padding: 10px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.3rem;
+      }
+      #pomodoro-container .big-timer {
+        font-size: 3.5rem;
+      }
+      #pomodoro-container button {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .time-box {
+        font-size: 1.8rem;
+        padding: 10px 12px;
+        min-width: 75px;
+      }
+      .countdown-timer {
+        gap: 10px;
+      }
+      .streak {
+        font-size: 1rem;
+      }
+      .mode-toggle {
+        bottom: 15px;
+        right: 15px;
+        padding: 8px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark/Light Mode Toggle (Bottom Right) -->
+  <button class="mode-toggle" id="mode-toggle">🌙 Dark Mode</button>
+  
+  <h1>🔥 Pomodoro & JEE/NEET Countdown 🔥</h1>
+  
+  <!-- Pomodoro Timer Section -->
+  <div class="container" id="pomodoro-container">
+    <h2>⏰ Pomodoro Timer</h2>
+    <div id="timer" class="big-timer">25:00</div>
+    <div class="buttons">
+      <button id="start-btn">▶️ Start</button>
+      <button id="pause-btn">⏸️ Pause</button>
+      <button id="reset-btn">🔄 Reset</button>
+    </div>
+    <div class="info-card">
+      <strong>About the Pomodoro Technique:</strong>
+      <p>🍅 Work for 25 minutes, then take a 5-minute break.</p>
+      <p>⏰ Boost your focus & productivity. After several cycles, take a longer break.</p>
+      <p>🔁 Cycles Completed: <span id="cycle-info">0</span></p>
+    </div>
+  </div>
+  
+  <!-- Stream Selection for Countdown Timer -->
+  <div class="container" id="stream-selection">
+    <h2>📚 Select Your Stream</h2>
+    <button id="jee-btn" class="stream-btn active">JEE (PCM)</button>
+    <button id="neet-btn" class="stream-btn">NEET (PCB)</button>
+  </div>
+  
+  <!-- Countdown Timer Section -->
+  <div class="container" id="countdown-container">
+    <h2 id="exam-title">⌛ Countdown to JEE 2027</h2>
+    <p id="exam-info" style="font-size:1.2rem; margin-bottom: 15px;">
+      Expected Exam Date: January 7, 2027 (9:00 AM)
+    </p>
+    <div class="countdown-timer" id="countdown">
+      <div class="time-box"><span id="days">000</span><div class="time-label">DAYS</div></div>
+      <div class="time-box"><span id="hours">00</span><div class="time-label">HOURS</div></div>
+      <div class="time-box"><span id="minutes">00</span><div class="time-label">MINUTES</div></div>
+      <div class="time-box"><span id="seconds">00</span><div class="time-label">SECONDS</div></div>
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+    <div class="quote" id="motivational-quote">Stay focused and keep pushing!</div>
+    <div class="streak" id="streak-counter">🔥 Streak: 0 days</div>
+  </div>
+  
+  <script>
+    /******************************************************
+     *                DARK/LIGHT MODE TOGGLE
+     ******************************************************/
+    const modeToggleBtn = document.getElementById("mode-toggle");
+    modeToggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      modeToggleBtn.textContent = document.body.classList.contains("dark") ? "☀️ Light Mode" : "🌙 Dark Mode";
+    });
+    
+    /******************************************************
+     *                POMODORO TIMER
+     ******************************************************/
+    const WORK_DURATION = 25 * 60;  // 25 minutes
+    const BREAK_DURATION = 5 * 60;  // 5 minutes
+    let isWorkSession = true;
+    let timerDuration = WORK_DURATION;
+    let timerInterval = null;
+    let cyclesCompleted = 0;
+    let lastBeepTime = -1;
+    
+    const timerEl = document.getElementById("timer");
+    const cycleInfoEl = document.getElementById("cycle-info");
+    const startBtn = document.getElementById("start-btn");
+    const pauseBtn = document.getElementById("pause-btn");
+    const resetBtn = document.getElementById("reset-btn");
+    
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    
+    function updatePomodoroDisplay(animate = false) {
+      if (animate) {
+        timerEl.classList.remove("pulse-animate");
+        void timerEl.offsetWidth;
+        timerEl.classList.add("pulse-animate");
+      }
+      timerEl.textContent = formatTime(timerDuration);
+      cycleInfoEl.textContent = cyclesCompleted;
+    }
+    
+    function playBeep() {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = 800;
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.2);
+      setTimeout(() => oscillator.stop(), 220);
+    }
+    
+    function resetPomodoro() {
+      isWorkSession = true;
+      timerDuration = WORK_DURATION;
+      cyclesCompleted = 0;
+      clearInterval(timerInterval);
+      timerInterval = null;
+      updatePomodoroDisplay();
+    }
+    
+    function checkDailyResetPomodoro() {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() < 3) {
+        resetPomodoro();
+      }
+    }
+    
+    function startPomodoroTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (timerDuration > 0) {
+          timerDuration--;
+          updatePomodoroDisplay(true);
+          if (timerDuration % 600 === 0 && timerDuration !== 0 && timerDuration !== lastBeepTime) {
+            playBeep();
+            lastBeepTime = timerDuration;
+          }
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          setTimeout(() => {
+            if (isWorkSession) {
+              cyclesCompleted++;
+              isWorkSession = false;
+              timerDuration = BREAK_DURATION;
+            } else {
+              isWorkSession = true;
+              timerDuration = WORK_DURATION;
+            }
+            updatePomodoroDisplay(true);
+            startPomodoroTimer();
+          }, 300);
+        }
+        checkDailyResetPomodoro();
+      }, 1000);
+    }
+    
+    startBtn.addEventListener("click", startPomodoroTimer);
+    pauseBtn.addEventListener("click", () => { clearInterval(timerInterval); timerInterval = null; });
+    resetBtn.addEventListener("click", resetPomodoro);
+    updatePomodoroDisplay();
+    
+    /******************************************************
+     *         JEE & NEET COUNTDOWN TIMER LOGIC
+     ******************************************************/
+    const examDates = {
+      jee: new Date("2027-01-07T09:00:00").getTime(),
+      neet: new Date("2027-05-07T09:00:00").getTime()
+    };
+    const prepStart = new Date().setHours(0,0,0,0); // Start from today
+    
+    const daysEl = document.getElementById("days");
+    const hoursEl = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
+    const progressEl = document.getElementById("progress");
+    const examTitleEl = document.getElementById("exam-title");
+    const examInfoEl = document.getElementById("exam-info");
+    
+    let selectedStream = "jee";
+    
+    function updateCountdown() {
+      const now = Date.now();
+      const examDate = examDates[selectedStream];
+      let diff = examDate - now;
+      if (diff <= 0) return;
+      daysEl.textContent = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(3, '0');
+      hoursEl.textContent = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      minutesEl.textContent = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      secondsEl.textContent = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+      
+      const totalPrep = examDate - prepStart;
+      const timePassed = now - prepStart;
+      let progressPercent = Math.min((timePassed / totalPrep) * 100, 100);
+      progressEl.style.width = progressPercent + "%";
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    
+    /******************************************************
+     *         MOTIVATIONAL QUOTES & STREAK COUNTER
+     ******************************************************/
+    const motivationalQuotes = [
+      "Success is no accident. It is hard work, perseverance, and learning.",
+      "Believe in yourself and all that you are.",
+      "Every day is a new chance to change your life.",
+      "The future depends on what you do today.",
+      "Push yourself, because no one else is going to do it for you."
+    ];
+    const quoteEl = document.getElementById("motivational-quote");
+    const streakEl = document.getElementById("streak-counter");
+    
+    function fadeQuote(newQuote) {
+      quoteEl.style.opacity = 0;
+      setTimeout(() => {
+        quoteEl.textContent = newQuote;
+        quoteEl.style.opacity = 1;
+      }, 800);
+    }
+    
+    function updateMotivationalQuote() {
+      const newQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+      fadeQuote(newQuote);
+    }
+    setInterval(updateMotivationalQuote, 60000);
+    updateMotivationalQuote();
+    
+    // Improved Streak Counter
+    let lastStudyDate = localStorage.getItem("lastStudyDate");
+    let streak = parseInt(localStorage.getItem("studyStreak")) || 0;
+    function updateStreak() {
+      const today = new Date().toDateString();
+      if (lastStudyDate !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(new Date().getDate() - 1);
+        if (lastStudyDate === yesterday.toDateString()) {
+          streak++;
+        } else {
+          streak = 1;
+        }
+        lastStudyDate = today;
+        localStorage.setItem("lastStudyDate", today);
+        localStorage.setItem("studyStreak", streak);
+      }
+      streakEl.textContent = "🔥 Streak: " + streak + " day" + (streak > 1 ? "s" : "");
+    }
+    setInterval(updateStreak, 5000);
+    updateStreak();
+    
+    /******************************************************
+     *         STREAM SELECTION HANDLER
+     ******************************************************/
+    const jeeBtn = document.getElementById("jee-btn");
+    const neetBtn = document.getElementById("neet-btn");
+    
+    jeeBtn.addEventListener("click", () => {
+      selectedStream = "jee";
+      jeeBtn.classList.add("active");
+      neetBtn.classList.remove("active");
+      examTitleEl.textContent = "⌛ Countdown to JEE 2027";
+      examInfoEl.textContent = "Expected Exam Date: January 7, 2027 (9:00 AM)";
+      updateCountdown();
+    });
+    
+    neetBtn.addEventListener("click", () => {
+      selectedStream = "neet";
+      neetBtn.classList.add("active");
+      jeeBtn.classList.remove("active");
+      examTitleEl.textContent = "⌛ Countdown to NEET 2027";
+      examInfoEl.textContent = "Expected Exam Date: May 7, 2027 (9:00 AM)";
+      updateCountdown();
+    });
+  </script>
+</body>
+</html>
