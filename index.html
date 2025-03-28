@@ -201,6 +201,11 @@
       opacity: 0.95;
       transform: scale(1.02);
     }
+    /* Tools Grid Adjustments */
+    .tools-grid .category img {
+      object-fit: contain;
+      height: 200px;
+    }
     /* FAQ Section */
     .faq-section {
       background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
@@ -412,31 +417,30 @@
 </head>
 <body>
   <!-- Navigation Bar -->
- <header>
-  <nav>
-    <div class="logo">
-      <img src="https://ebooksofficial.netlify.app/ebookpic.jpg" alt="Logo" style="height:40px; margin-right:10px;">
-      EBooks 11th
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="https://ebooksofficial.netlify.app/ebookpic.jpg" alt="Logo" style="height:40px; margin-right:10px;">
+        EBooks 11th
+      </div>
+      <ul class="nav-links">
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </nav>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#categories">Categories</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
     </div>
-    <ul class="nav-links">
-      <li><a href="#categories">Categories</a></li>
-      <li><a href="#faq">FAQ</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="hamburger" id="hamburger">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </nav>
-  <!-- Mobile Menu -->
-  <div class="mobile-menu" id="mobile-menu">
-    <a href="#categories">Categories</a>
-    <a href="#faq">FAQ</a>
-    <a href="#contact">Contact</a>
-  </div>
-</header>
-
+  </header>
 
   <div class="container">
     <h1 class="title">EBooks 11th By EFK</h1>
@@ -458,36 +462,38 @@
         <button class="btn">Get Papers 📝</button>
       </div>
 
-      <!-- Sample Papers -->
-      <div class="category">
-        <img src="https://ideogram.ai/assets/image/lossless/response/qflgRm91Quu7PJfhAPpKtA" alt="Sample Papers" loading="lazy">
-        <h2>Sample Papers 📄</h2>
-        <p>Model test papers with solutions</p>
-        <button class="btn">Download 📥</button>
-      </div>
-
-      <!-- Test Series -->
-      <div class="category">
-        <img src="https://ideogram.ai/assets/image/lossless/response/UApEfljOQLiEBlVz42u2ZQ" alt="Test Series" loading="lazy">
-        <h2>Test Series 📝</h2>
-        <p>Weekly mock tests with analytics</p>
-        <button class="btn">Join Now 👉</button>
-      </div>
-
-      <!-- Competency Based -->
-      <div class="category">
-        <img src="https://ideogram.ai/assets/image/lossless/response/ds53JTikRWmzd0BIcCkXeg" alt="Competency" loading="lazy">
-        <h2>Competency Based 🎯</h2>
-        <p>Skill-focused learning material</p>
-        <button class="btn">Explore 🔍</button>
-      </div>
-
       <!-- Practice Books -->
       <div class="category">
         <img src="https://ideogram.ai/assets/image/lossless/response/MmX22lCISn2bR0SrvAIZ6g" alt="Practice" loading="lazy">
         <h2>Practice Books 📒</h2>
         <p>Subject-wise practice workbooks</p>
         <button class="btn">Get Books 📚</button>
+      </div>
+    </div>
+
+    <!-- Tools Section -->
+    <h1 class="title" style="font-size: 3.5rem; margin: 4rem 0 2rem; text-align: center;">Tools</h1>
+    <div class="grid tools-grid">
+      <!-- Pomodoro Timer & Countdown -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/dGbtbgYRT3yHeVSIDHxyWA" alt="Pomodoro Timer & Countdown" loading="lazy">
+        <h2>Pomodoro Timer & Countdown</h2>
+        <p></p>
+        <button class="btn">Go →</button>
+      </div>
+      <!-- Marks Analyzer -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/N9eWhdggTZqbidG1ud7NJw" alt="Marks Analyzer" loading="lazy">
+        <h2>Marks Analyzer</h2>
+        <p></p>
+        <button class="btn">Go →</button>
+      </div>
+      <!-- Daily Planner -->
+      <div class="category">
+        <img src="https://ideogram.ai/assets/image/lossless/response/KsYjWWd3Rg-4U75CmSBkow" alt="Daily Planner" loading="lazy">
+        <h2>Daily Planner</h2>
+        <p></p>
+        <button class="btn">Go →</button>
       </div>
     </div>
 
@@ -542,17 +548,17 @@
         <p><a href="#contact">Contact</a></p>
       </div>
     
-     
-    <div class="footer-content" style="justify-content: center; margin-top: 2rem;">
-      <div class="social-icons">
-        <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-        <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+      <div class="footer-content" style="justify-content: center; margin-top: 2rem;">
+        <div class="social-icons">
+          <a href="#" target="_blank"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+        </div>
       </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 EBooks 11th By EFK. All Rights Reserved. Designed with passion by <a href="freekitaab.netlify.app" target="_blank">EFK</a></p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 EBooks 11th By EFK. All Rights Reserved. Designed with passion by <a href="freekitaab.netlify.app" target="_blank">EFK</a></p>
+      </div>
     </div>
   </footer>
 
@@ -579,7 +585,10 @@
         "sqp.html",        // Sample Papers
         "testseries.html", // Test Series
         "competency.html", // Competency Based
-        "practicebooks.html" // Practice Books
+        "practicebooks.html", // Practice Books
+        "timer.html",      // Pomodoro Timer & Countdown
+        "marks.html",      // Marks Analyzer
+        "task.html"        // Daily Planner
       ];
       document.querySelectorAll(".btn").forEach((btn, index) => {
         btn.addEventListener("click", function() {
