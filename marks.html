@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Series / SQP Marks Analyzer</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      /* Light Mode Colors & Gradients */
+      --light-body-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+      --light-text: #2d3748;
+      --light-container-bg: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      
+      /* Dark Mode Colors & Gradients */
+      --dark-body-bg: linear-gradient(135deg, #232526 0%, #414345 100%);
+      --dark-text: #f7fafc;
+      --dark-container-bg: linear-gradient(135deg, #1a1b1c 0%, #2d2f30 100%);
+      
+      /* Accent Colors */
+      --accent-primary: #4f46e5;
+      --accent-secondary: #6366f1;
+      
+      /* Fonts & Transition */
+      --font-family: 'Montserrat', sans-serif;
+      --transition-speed: 0.3s;
+      --border-radius: 12px;
+    }
+
+    /* GLOBAL STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--light-body-bg);
+      color: var(--light-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      transition: background var(--transition-speed), color var(--transition-speed);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    body.dark {
+      background: var(--dark-body-bg);
+      color: var(--dark-text);
+    }
+
+    h1 {
+      margin: 1.5rem 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--accent-primary);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      background: var(--light-container-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      width: 100%;
+      max-width: 960px;
+      padding: 2rem;
+      margin: 1rem;
+      transition: all var(--transition-speed);
+    }
+
+    body.dark .container {
+      background: var(--dark-container-bg);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    /* Dark/Light Mode Toggle with Icon */
+    .mode-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .mode-toggle:hover {
+      background: var(--accent-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+    }
+
+    /* Input Groups */
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .input-group select,
+    .input-group input {
+      flex: 1 1 200px;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: white;
+      transition: all var(--transition-speed);
+    }
+
+    body.dark .input-group select,
+    body.dark .input-group input {
+      background: #2d3748;
+      border-color: #4a5568;
+      color: white;
+    }
+
+    .input-group button {
+      padding: 0.875rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: var(--accent-primary);
+      color: white;
+      transition: all var(--transition-speed);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .input-group button:hover {
+      background: var(--accent-secondary);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Marks List */
+    #marksList {
+      margin: 1.5rem 0;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    #marksList p {
+      margin: 0.75rem 0;
+      padding: 0.75rem 1rem;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    body.dark #marksList p {
+      background: #2d3748;
+    }
+
+    /* Analysis Panel */
+    .analysis {
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: rgba(79,70,229,0.1);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      text-align: center;
+    }
+
+    .analysis p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin: 0;
+    }
+
+    /* Chart Container for Responsiveness */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      margin-top: 2rem;
+    }
+
+    /* Responsive Chart Canvas */
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .container {
+        padding: 1.5rem;
+      }
+
+      .input-group {
+        flex-direction: column;
+      }
+
+      .input-group button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .mode-toggle {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .analysis {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes pulseAnimation {
+      0%   { transform: scale(1); opacity: 1; }
+      50%  { transform: scale(1.05); opacity: 0.9; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .pulse-animate {
+      animation: pulseAnimation 0.5s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark/Light Mode Toggle -->
+  <button class="mode-toggle" id="mode-toggle"><span id="mode-icon">🌙</span> Dark Mode</button>
+  
+  <h1>📊 Test Series & SQP Marks Analyzer</h1>
+  
+  <div class="container">
+    <div class="input-group">
+      <select id="stream">
+        <option value="JEE">JEE (Out of 300)</option>
+        <option value="NEET">NEET (Out of 720)</option>
+        <option value="Other">Other (Custom Total)</option>
+      </select>
+      <input type="number" id="totalMarks" placeholder="Total Marks (Only for Other)" style="display:none;">
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="testName" placeholder="Test Name (e.g. Sample Paper 1)">
+      <input type="number" id="testMarks" placeholder="Marks Obtained">
+      <button id="addTestBtn">➕ Add Test</button>
+    </div>
+
+    <div id="marksList"></div>
+
+    <div class="input-group">
+      <button id="analyzeBtn">📈 Analyze Results</button>
+      <button id="sortAscBtn">⬆️ Sort Ascending</button>
+      <button id="sortDescBtn">⬇️ Sort Descending</button>
+      <button id="exportBtn">📥 Export CSV</button>
+      <button id="clearBtn">🗑️ Clear All Data</button>
+    </div>
+
+    <div class="analysis" id="analysis"></div>
+
+    <div class="chart-container">
+      <canvas id="marksChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // Elements and Variables
+    const streamSelect = document.getElementById('stream');
+    const totalMarksInput = document.getElementById('totalMarks');
+    const testNameInput = document.getElementById('testName');
+    const testMarksInput = document.getElementById('testMarks');
+    const addTestBtn = document.getElementById('addTestBtn');
+    const marksListDiv = document.getElementById('marksList');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const sortAscBtn = document.getElementById('sortAscBtn');
+    const sortDescBtn = document.getElementById('sortDescBtn');
+    const analysisDiv = document.getElementById('analysis');
+    const ctx = document.getElementById('marksChart').getContext('2d');
+    const modeToggleBtn = document.getElementById('mode-toggle');
+    const modeIcon = document.getElementById('mode-icon');
+    let tests = [];
+    let chart;
+
+    // Load stored tests from localStorage on page load
+    function loadTests() {
+      const storedTests = localStorage.getItem('testSeriesData');
+      if (storedTests) {
+        tests = JSON.parse(storedTests);
+        tests.forEach(test => addTestToList(test));
+      }
+    }
+    loadTests();
+
+    // Save tests to localStorage
+    function saveTests() {
+      localStorage.setItem('testSeriesData', JSON.stringify(tests));
+    }
+
+    // Handle stream selection
+    streamSelect.addEventListener('change', () => {
+      if (streamSelect.value === 'Other') {
+        totalMarksInput.style.display = 'block';
+      } else {
+        totalMarksInput.style.display = 'none';
+        totalMarksInput.value = '';
+      }
+    });
+
+    // Add test button event
+    addTestBtn.addEventListener('click', () => {
+      const name = testNameInput.value.trim();
+      const marks = parseFloat(testMarksInput.value);
+      let totalMarks;
+      if (streamSelect.value === 'JEE') totalMarks = 300;
+      else if (streamSelect.value === 'NEET') totalMarks = 720;
+      else totalMarks = parseFloat(totalMarksInput.value) || 100;
+
+      if (name && !isNaN(marks) && marks <= totalMarks) {
+        const test = { name, marks, totalMarks };
+        tests.push(test);
+        addTestToList(test);
+        saveTests();
+        testNameInput.value = '';
+        testMarksInput.value = '';
+      } else {
+        alert('Please enter a valid test name and marks (marks should not exceed total marks).');
+      }
+    });
+
+    // Helper: Add test entry to list
+    function addTestToList(test) {
+      const percentage = ((test.marks / test.totalMarks) * 100).toFixed(2);
+      const p = document.createElement('p');
+      p.className = 'slide-in';
+      p.innerHTML = `<span>${test.name}</span><span>${test.marks}/${test.totalMarks} (${percentage}%)</span>`;
+      marksListDiv.appendChild(p);
+    }
+
+    // Analyze results button event
+    analyzeBtn.addEventListener('click', () => {
+      if (tests.length === 0) {
+        alert("Please add at least one test result.");
+        return;
+      }
+      let totalMarksObtained = 0;
+      let maxMarks = -Infinity;
+      let minMarks = Infinity;
+      let bestPercentage = -Infinity;
+      
+      tests.forEach(test => {
+        totalMarksObtained += test.marks;
+        if (test.marks > maxMarks) maxMarks = test.marks;
+        if (test.marks < minMarks) minMarks = test.marks;
+        const percent = (test.marks / test.totalMarks) * 100;
+        if (percent > bestPercentage) bestPercentage = percent;
+      });
+      const avgMarks = (totalMarksObtained / tests.length).toFixed(2);
+      analysisDiv.innerHTML = `
+        <div class="slide-in">
+          <p>📊 Average: ${avgMarks}</p>
+          <p>🚀 Highest: ${maxMarks}</p>
+          <p>📉 Lowest: ${minMarks}</p>
+          <p>🏆 Best: ${bestPercentage.toFixed(2)}%</p>
+        </div>
+      `;
+      
+      // Prepare Chart Data
+      const labels = tests.map(test => test.name);
+      const data = tests.map(test => test.marks);
+      
+      // Create a vertical gradient for the chart
+      const gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+      gradient.addColorStop(0, '#667eea');
+      gradient.addColorStop(1, '#764ba2');
+
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Marks Obtained',
+            data,
+            backgroundColor: gradient,
+            borderColor: '#3730a3',
+            borderWidth: 2,
+            borderRadius: 8,
+            hoverBackgroundColor: '#6366f1',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(0,0,0,0.1)' },
+              ticks: { precision: 0 }
+            },
+            x: {
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#1e293b' }
+          }
+        }
+      });
+    });
+
+    // Sorting functions
+    sortAscBtn.addEventListener('click', () => {
+      tests.sort((a, b) => a.marks - b.marks);
+      refreshMarksList();
+      saveTests();
+    });
+    sortDescBtn.addEventListener('click', () => {
+      tests.sort((a, b) => b.marks - a.marks);
+      refreshMarksList();
+      saveTests();
+    });
+    function refreshMarksList() {
+      marksListDiv.innerHTML = '';
+      tests.forEach(test => addTestToList(test));
+    }
+
+    // Export to CSV
+    exportBtn.addEventListener('click', () => {
+      if (tests.length === 0) {
+        alert("No test data to export.");
+        return;
+      }
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Test Name,Marks Obtained,Total Marks,Percentage (%)\n";
+      tests.forEach(test => {
+        const percentage = ((test.marks / test.totalMarks) * 100).toFixed(2);
+        csvContent += `${test.name},${test.marks},${test.totalMarks},${percentage}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "test_series_data.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // Clear data button event
+    clearBtn.addEventListener('click', () => {
+      if (confirm("Are you sure you want to clear all test data?")) {
+        tests = [];
+        localStorage.removeItem('testSeriesData');
+        marksListDiv.innerHTML = '';
+        analysisDiv.innerHTML = '';
+        if (chart) chart.destroy();
+      }
+    });
+
+    // Dark/Light Mode Toggle with Icon Update
+    modeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        modeToggleBtn.innerHTML = `<span id="mode-icon">☀</span> Light Mode`;
+      } else {
+        modeToggleBtn.innerHTML = `<span id="mode-icon">🌙</span> Dark Mode`;
+      }
+    });
+  </script>
+</body>
+</html>
