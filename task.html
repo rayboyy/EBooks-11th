@@ -4,38 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>🗓️ Advanced Student Daily Planner</title>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* ---------- Global Variables & Base Styles ---------- */
     :root {
-      /* Light mode gradients */
       --bg-gradient-light: linear-gradient(135deg, #a1c4fd, #c2e9fb);
       --container-bg-light: linear-gradient(145deg, #ffffff, #f8f9ff);
       --btn-gradient-light: linear-gradient(135deg, #6a11cb, #2575fc);
       --holiday-bg-light: #ff073a;
       --music-gradient-light: linear-gradient(135deg, #667eea, #764ba2);
-      
-      /* Dark mode gradients */
       --bg-gradient-dark: linear-gradient(135deg, #232526, #414345);
       --container-bg-dark: linear-gradient(145deg, #2a2a2a, #1f1f1f);
       --btn-gradient-dark: linear-gradient(135deg, #0f2027, #203a43);
       --holiday-bg-dark: #ff4d4d;
       --music-gradient-dark: linear-gradient(135deg, #434343, #000000);
-      
-      /* Font & sizing */
       --primary-font: 'Poppins', sans-serif;
       --heading-size: 2rem;
       --subheading-size: 1.5rem;
       --text-size: 1rem;
+      --high-priority: #ff4444;
+      --medium-priority: #ffa500;
+      --low-priority: #4CAF50;
     }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    
+
     body {
       font-family: var(--primary-font);
       background: var(--bg-gradient-light);
@@ -45,15 +41,25 @@
       align-items: center;
       padding: 1rem;
       min-height: 100vh;
-      transition: background 0.4s, color 0.4s;
+      transition: background 0.4s ease, color 0.4s ease;
     }
-    
+
     body.dark {
       background: var(--bg-gradient-dark);
       color: #ddd;
     }
-    
-    /* ---------- Dark/Light Mode Toggle Button (Bottom Right) ---------- */
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
     #dark-mode-toggle {
       position: fixed;
       bottom: 20px;
@@ -68,11 +74,11 @@
       transition: 0.3s;
       z-index: 100;
     }
+
     body.dark #dark-mode-toggle {
       background: var(--btn-gradient-dark);
     }
-    
-    /* ---------- Planner Container ---------- */
+
     .planner-container {
       background: var(--container-bg-light);
       width: 100%;
@@ -83,9 +89,11 @@
       margin-bottom: 1.5rem;
       transition: background 0.3s;
     }
+
     body.dark .planner-container {
       background: var(--container-bg-dark);
     }
+
     .date-nav {
       display: flex;
       justify-content: space-between;
@@ -93,12 +101,14 @@
       margin-bottom: 1rem;
       gap: 0.5rem;
     }
+
     .date-display {
       font-size: var(--subheading-size);
       font-weight: 600;
       text-align: center;
       flex: 1;
     }
+
     .nav-btn {
       background: var(--btn-gradient-light);
       color: #fff;
@@ -110,27 +120,33 @@
       font-size: 0.9rem;
       white-space: nowrap;
     }
+
     body.dark .nav-btn {
       background: var(--btn-gradient-dark);
     }
+
     .nav-btn:hover {
       transform: scale(1.05);
     }
-    
+
     form {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
+
     input[type="text"],
-    textarea {
+    textarea,
+    select {
       padding: 0.75rem;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: var(--text-size);
       width: 100%;
+      -webkit-appearance: none;
     }
+
     button.add-task {
       padding: 0.75rem;
       border: none;
@@ -141,23 +157,54 @@
       cursor: pointer;
       transition: transform 0.2s, background 0.3s;
     }
+
     body.dark button.add-task {
       background: var(--btn-gradient-dark);
     }
+
     button.add-task:hover {
       transform: scale(1.02);
     }
+
     .task-list {
       list-style: none;
       padding: 0;
+      transition: all 0.3s ease;
     }
+
     .task-item {
-      border-bottom: 1px solid #eee;
-      padding: 1rem 0;
+      border-left: 4px solid;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      padding: 1rem;
       display: flex;
       flex-direction: column;
       font-size: var(--text-size);
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      background: rgba(255,255,255,0.1);
+      position: relative;
     }
+
+    body.dark .task-item {
+      background: rgba(0,0,0,0.1);
+    }
+
+    .task-item.high { border-color: var(--high-priority); }
+    .task-item.medium { border-color: var(--medium-priority); }
+    .task-item.low { border-color: var(--low-priority); }
+
+    .task-item.adding {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .task-item.removing {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
     .task-header {
       display: flex;
       justify-content: space-between;
@@ -165,12 +212,33 @@
       gap: 0.5rem;
       margin-bottom: 0.5rem;
     }
+
+    .priority-indicator {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .high .priority-indicator { background: var(--high-priority); }
+    .medium .priority-indicator { background: var(--medium-priority); }
+    .low .priority-indicator { background: var(--low-priority); }
+
     .task-title {
       font-weight: 600;
       font-size: 1.1rem;
+      word-break: break-word;
     }
+
+    .task-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
     .task-controls button {
-      margin-left: 0.5rem;
       padding: 0.4rem 0.8rem;
       font-size: 0.9rem;
       border: none;
@@ -178,23 +246,26 @@
       cursor: pointer;
       transition: transform 0.2s;
     }
+
     .task-controls button.edit {
       background: #ffb347;
       color: #333;
     }
+
     .task-controls button.delete {
       background: #ff073a;
       color: #fff;
     }
+
     .task-controls button:hover {
       transform: scale(1.05);
     }
+
     .completed {
       text-decoration: line-through;
       opacity: 0.65;
     }
-    
-    /* ---------- Extra Features ---------- */
+
     .extra-features {
       width: 100%;
       max-width: 800px;
@@ -203,6 +274,7 @@
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
     }
+
     .feature-box {
       background: var(--container-bg-light);
       padding: 1.5rem;
@@ -211,18 +283,20 @@
       text-align: center;
       transition: background 0.3s;
     }
+
     body.dark .feature-box {
       background: var(--container-bg-dark);
     }
-    .feature-box h2 {
+
+    .feature-box h3 {
       font-size: var(--subheading-size);
       margin-bottom: 1rem;
     }
+
     .feature-box p {
       font-size: var(--text-size);
     }
-    
-    /* ---------- Calendar Section ---------- */
+
     .calendar-container {
       width: 100%;
       max-width: 800px;
@@ -233,24 +307,24 @@
       margin-bottom: 1.5rem;
       transition: background 0.3s;
     }
+
     body.dark .calendar-container {
       background: var(--container-bg-dark);
     }
-    .calendar-container h2 {
-      font-size: var(--subheading-size);
-      margin-bottom: 1rem;
-    }
+
     .calendar-month {
       text-align: center;
       font-size: var(--subheading-size);
       font-weight: 600;
       margin-bottom: 1rem;
     }
+
     #calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
     }
+
     .calendar-cell {
       background: #f4f4f4;
       padding: 0.5rem;
@@ -265,17 +339,21 @@
       align-items: center;
       justify-content: center;
     }
+
     body.dark .calendar-cell {
       background: #3a3a3a;
     }
+
     .calendar-cell:hover {
       background: var(--btn-gradient-light);
       color: #fff;
       transform: scale(1.04);
     }
+
     body.dark .calendar-cell:hover {
       background: var(--btn-gradient-dark);
     }
+
     .calendar-header {
       font-weight: 600;
       background: #ddd;
@@ -284,9 +362,11 @@
       text-align: center;
       font-size: 0.9rem;
     }
+
     body.dark .calendar-header {
       background: #555;
     }
+
     .tooltip {
       position: absolute;
       bottom: 100%;
@@ -303,15 +383,16 @@
       transition: opacity 0.3s;
       z-index: 10;
     }
+
     .calendar-cell:hover .tooltip {
       opacity: 1;
     }
-    
-    /* ---------- Music Player Enhancements ---------- */
+
     #motivation-sound {
       position: relative;
       overflow: hidden;
     }
+
     #play-sound {
       background: var(--music-gradient-light);
       border: none;
@@ -322,14 +403,16 @@
       font-size: 16px;
       transition: all 0.3s;
     }
+
     body.dark #play-sound {
       background: var(--music-gradient-dark);
     }
+
     #play-sound:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
-    /* Song options container with scrollbar */
+
     #song-options {
       margin-top: 1rem;
       max-height: 0;
@@ -345,21 +428,26 @@
       border-radius: 10px;
       padding: 10px;
     }
+
     #song-options.visible {
       max-height: 150px;
       opacity: 1;
       overflow-y: auto;
     }
+
     #song-options::-webkit-scrollbar {
       width: 5px;
     }
+
     #song-options::-webkit-scrollbar-track {
       background: transparent;
     }
+
     #song-options::-webkit-scrollbar-thumb {
       background: #888;
       border-radius: 5px;
     }
+
     .song-option {
       padding: 10px;
       margin: 5px 0;
@@ -368,152 +456,196 @@
       background: rgba(255,255,255,0.2);
       border-radius: 6px;
       text-align: center;
+      width: 100%;
     }
+
     .song-option:hover {
       background: rgba(255,255,255,0.3);
       transform: translateX(5px);
     }
+
     body.dark .song-option {
       background: rgba(0,0,0,0.2);
     }
+
     body.dark .song-option:hover {
       background: rgba(0,0,0,0.3);
     }
-    
-    /* YouTube Player Container */
+
     #player-container {
       margin-top: 1rem;
       width: 100%;
       max-width: 300px;
       display: none;
     }
+
     #ytplayer {
       width: 100%;
       height: 169px;
       border: none;
     }
-    
-    /* ---------- Responsive Adjustments ---------- */
-    @media (max-width: 480px) {
-      #dark-mode-toggle {
-        padding: 8px 12px;
-        font-size: 14px;
-      }
+
+    @media (max-width: 600px) {
       h1 {
         font-size: 1.5rem;
+        text-align: center;
       }
+
       .planner-container, .calendar-container {
         padding: 1rem;
       }
-      .date-display {
-        font-size: 1rem;
+
+      .date-nav {
+        flex-wrap: wrap;
       }
+
       .nav-btn {
-        padding: 0.4rem 0.8rem;
+        flex: 1;
+        padding: 0.5rem;
         font-size: 0.8rem;
       }
-      input[type="text"],
-      textarea {
-        font-size: 0.9rem;
-      }
-      button.add-task {
-        font-size: 0.9rem;
-      }
-      .task-title {
+
+      .date-display {
         font-size: 1rem;
+        order: -1;
+        width: 100%;
+        margin-bottom: 0.5rem;
       }
+
+      .task-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .task-controls {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .priority-indicator {
+        font-size: 0.7rem;
+      }
+
+      .feature-box {
+        padding: 1rem;
+      }
+
+      .feature-box h3 {
+        font-size: 1.1rem;
+      }
+
+      .calendar-cell {
+        font-size: 0.8rem;
+        padding: 0.25rem;
+      }
+
+      #play-sound {
+        padding: 0.75rem 1rem;
+        font-size: 14px;
+      }
+
+      .song-option {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      #dark-mode-toggle {
+        padding: 8px 12px;
+        font-size: 14px;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
       .task-controls button {
         padding: 0.3rem 0.6rem;
         font-size: 0.8rem;
       }
-      .feature-box {
-        padding: 1rem;
-      }
-      .feature-box h2 {
-        font-size: 1.2rem;
-      }
-      .calendar-cell {
-        font-size: 0.8rem;
-        padding: 0.25rem;
+
+      .priority-indicator {
+        font-size: 0.6rem;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Dark/Light Mode Toggle (Bottom Right) -->
-  <button id="dark-mode-toggle">🌗 Toggle Mode</button>
-  
-  <h1>🗓️ Advanced Student Daily Planner</h1>
-  
-  <!-- Daily Planner Section -->
-  <div class="planner-container">
-    <div class="date-nav">
-      <button class="nav-btn" id="prev-day">← Previous</button>
-      <div class="date-display" id="date-display">Date Here</div>
-      <button class="nav-btn" id="next-day">Next →</button>
-    </div>
-    <form id="task-form">
-      <input type="text" id="task-title" placeholder="Task Title" required>
-      <textarea id="task-desc" placeholder="Task Description" rows="2" required></textarea>
-      <button type="submit" class="add-task">➕ Add Task</button>
-    </form>
-    <ul id="task-list" class="task-list"></ul>
-  </div>
-  
-  <!-- Extra Features Section -->
-  <div class="extra-features">
-    <div class="feature-box" id="study-tip">
-      <h2>💡 Study Tip</h2>
-      <p id="tip-text">Loading tip...</p>
-    </div>
-    <div class="feature-box" id="quote-of-day">
-      <h2>✨ Quote</h2>
-      <p id="quote-text">Loading quote...</p>
-    </div>
-    
-    <!-- Lofi Music Feature Section -->
-    <div class="feature-box" id="motivation-sound">
-      <h2>🎵 Lofi Music</h2>
-      <button id="play-sound">
-        <span class="button-text">▶️ Play Lofi</span>
-      </button>
-      <div id="song-options">
-        <div class="song-option" data-url="https://www.youtube.com/watch?v=CLeZyIID9Bo">🍂 Chill Beats</div>
-        <div class="song-option" data-url="https://www.youtube.com/watch?v=cIZhlFIyJ_Y&t=13s">🌌 Night Vibes</div>
-        <div class="song-option" data-url="https://www.youtube.com/watch?v=OO2kPK5-qno">☕ Cafe Ambience</div>
-        <div class="song-option" data-url="https://www.youtube.com/watch?v=1ZYbU82GVz4">😌 Relax</div>
+  <main>
+    <h1>🗓️ Advanced Student Daily Planner</h1>
+
+    <section class="planner-container" aria-labelledby="planner-heading">
+      <h2 id="planner-heading" class="sr-only">Daily Planner</h2>
+      <div class="date-nav">
+        <button class="nav-btn" id="prev-day" aria-label="Previous Day">← Previous</button>
+        <div class="date-display" id="date-display" aria-live="polite">Date Here</div>
+        <button class="nav-btn" id="next-day" aria-label="Next Day">Next →</button>
       </div>
-      <!-- YouTube Player Container -->
-      <div id="player-container">
-        <iframe id="ytplayer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <form id="task-form" aria-labelledby="add-task-heading">
+        <h3 id="add-task-heading" class="sr-only">Add New Task</h3>
+        <input type="text" id="task-title" placeholder="Task Title" required aria-required="true">
+        <textarea id="task-desc" placeholder="Task Description" rows="2" required aria-required="true"></textarea>
+        <select id="task-priority" required>
+          <option value="high">🔴 High Priority</option>
+          <option value="medium">🟠 Medium Priority</option>
+          <option value="low">🟢 Low Priority</option>
+        </select>
+        <button type="submit" class="add-task">➕ Add Task</button>
+      </form>
+      <ul id="task-list" class="task-list" aria-labelledby="task-list-heading"></ul>
+      <h3 id="task-list-heading" class="sr-only">Task List</h3>
+    </section>
+
+    <section class="extra-features" aria-labelledby="features-heading">
+      <h2 id="features-heading" class="sr-only">Extra Features</h2>
+      <div class="feature-box" id="study-tip">
+        <h3>💡 Study Tip</h3>
+        <p id="tip-text">Loading tip...</p>
       </div>
-    </div>
-  </div>
-  
-  <!-- Calendar Section -->
-  <div class="calendar-container">
-    <div class="calendar-month" id="calendar-month">Month, Year</div>
-    <div id="calendar"></div>
-  </div>
-  
-  <!-- JavaScript Section -->
+      <div class="feature-box" id="quote-of-day">
+        <h3>✨ Quote</h3>
+        <p id="quote-text">Loading quote...</p>
+      </div>
+      
+      <div class="feature-box" id="motivation-sound">
+        <h3>🎵 Lofi Music</h3>
+        <button id="play-sound" aria-expanded="false" aria-controls="song-options">
+          <span class="button-text">▶️ Play Lofi</span>
+        </button>
+        <div id="song-options" role="listbox" aria-label="Song Options">
+          <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=CLeZyIID9Bo">🍂 Chill Beats</div>
+          <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=cIZhlFIyJ_Y&t=13s">🌌 Night Vibes</div>
+          <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=OO2kPK5-qno">☕ Cafe Ambience</div>
+          <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=1ZYbU82GVz4">😌 Relax</div>
+        </div>
+        <div id="player-container" aria-live="polite">
+          <iframe id="ytplayer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="calendar-container" aria-labelledby="calendar-heading">
+      <h2 id="calendar-heading" class="sr-only">Calendar</h2>
+      <div class="calendar-month" id="calendar-month">Month, Year</div>
+      <div id="calendar" role="grid" aria-label="Calendar"></div>
+    </section>
+  </main>
+
+  <button id="dark-mode-toggle" aria-label="Toggle Dark Mode">🌗 Toggle Mode</button>
+
   <script>
-    /* ---------- Disable Basic DevTools Shortcuts ---------- */
     document.onkeydown = function(e) {
-      if(e.keyCode === 123 || 
-         (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
-         (e.ctrlKey && e.keyCode === 85)) {
+      if (e.keyCode === 123 || 
+          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+          (e.ctrlKey && e.keyCode === 85)) {
         return false;
       }
     };
     
-    /* ---------- Dark/Light Mode Toggle ---------- */
     const darkModeBtn = document.getElementById('dark-mode-toggle');
     darkModeBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark');
     });
     
-    /* ---------- Daily Planner Code ---------- */
     let selectedDate = new Date();
     selectedDate.setHours(0, 0, 0, 0);
     const dateDisplay = document.getElementById('date-display');
@@ -534,37 +666,59 @@
     
     function getTasksForDate(date) {
       const key = getDateKey(date);
-      return JSON.parse(localStorage.getItem(key)) || [];
+      try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+      } catch (error) {
+        console.error('Error retrieving tasks:', error);
+        return [];
+      }
     }
     
     function saveTasksForDate(date, tasks) {
       const key = getDateKey(date);
-      localStorage.setItem(key, JSON.stringify(tasks));
+      try {
+        localStorage.setItem(key, JSON.stringify(tasks));
+      } catch (error) {
+        console.error('Error saving tasks:', error);
+      }
     }
     
     const taskForm = document.getElementById('task-form');
     const taskList = document.getElementById('task-list');
+    
+    function escapeHTML(str) {
+      return str.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+    }
     
     function renderTasks() {
       const tasks = getTasksForDate(selectedDate);
       taskList.innerHTML = '';
       tasks.forEach((task, index) => {
         const li = document.createElement('li');
-        li.className = 'task-item';
+        li.className = `task-item ${task.priority} adding`;
         li.innerHTML = `
           <div class="task-header">
             <div>
               <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})">
-              <span class="task-title ${task.completed ? 'completed' : ''}">${task.title}</span>
+              <span class="task-title ${task.completed ? 'completed' : ''}">${escapeHTML(task.title)}</span>
+              <span class="priority-indicator">
+                ${task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟠' : '🟢'} 
+                ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+              </span>
             </div>
             <div class="task-controls">
               <button class="edit" onclick="editTask(${index})">Edit</button>
               <button class="delete" onclick="deleteTask(${index})">Delete</button>
             </div>
           </div>
-          <p class="${task.completed ? 'completed' : ''}">${task.description}</p>
+          <p class="${task.completed ? 'completed' : ''}">${escapeHTML(task.description)}</p>
         `;
         taskList.appendChild(li);
+        setTimeout(() => li.classList.remove('adding'), 50);
       });
     }
     
@@ -576,19 +730,27 @@
     };
     
     window.deleteTask = function(index) {
-      const tasks = getTasksForDate(selectedDate);
-      tasks.splice(index, 1);
-      saveTasksForDate(selectedDate, tasks);
-      renderTasks();
+      if (confirm("Are you sure you want to delete this task?")) {
+        const tasks = getTasksForDate(selectedDate);
+        const li = taskList.children[index];
+        li.classList.add('removing');
+        setTimeout(() => {
+          tasks.splice(index, 1);
+          saveTasksForDate(selectedDate, tasks);
+          renderTasks();
+        }, 300);
+      }
     };
     
     window.editTask = function(index) {
       const tasks = getTasksForDate(selectedDate);
       const newTitle = prompt("Edit Task Title:", tasks[index].title);
       const newDesc = prompt("Edit Task Description:", tasks[index].description);
-      if (newTitle && newDesc) {
+      const newPriority = prompt("Edit Priority (high/medium/low):", tasks[index].priority);
+      if (newTitle && newDesc && newPriority) {
         tasks[index].title = newTitle;
         tasks[index].description = newDesc;
+        tasks[index].priority = newPriority;
         saveTasksForDate(selectedDate, tasks);
         renderTasks();
       }
@@ -598,8 +760,9 @@
       e.preventDefault();
       const title = document.getElementById('task-title').value;
       const description = document.getElementById('task-desc').value;
+      const priority = document.getElementById('task-priority').value;
       const tasks = getTasksForDate(selectedDate);
-      tasks.push({ title, description, completed: false });
+      tasks.push({ title, description, priority, completed: false });
       saveTasksForDate(selectedDate, tasks);
       renderTasks();
       taskForm.reset();
@@ -621,21 +784,20 @@
     
     renderTasks();
     
-    /* ---------- Study Tip & Quote Features ---------- */
     const studyTips = [
-      "Break your study sessions into small, focused intervals.",
-      "Revise regularly and test yourself frequently.",
-      "Take short breaks to keep your mind fresh.",
-      "Eliminate distractions—turn off notifications!",
-      "Set specific goals for each study session."
+      "Break study sessions into focused intervals",
+      "Test yourself frequently",
+      "Take short breaks",
+      "Turn off notifications",
+      "Set specific goals"
     ];
     
     const quotes = [
-      "Success is no accident. – Pele",
-      "Believe you can and you're halfway there. – Theodore Roosevelt",
-      "The future belongs to those who prepare for it today. – Malcolm X",
-      "Push yourself, because no one else is going to do it for you.",
-      "Great things never come from comfort zones."
+      "Success is no accident – Pele",
+      "Believe you can – Roosevelt",
+      "Prepare today – Malcolm X",
+      "Push yourself",
+      "Leave comfort zone"
     ];
     
     function fadeOut(element, callback) {
@@ -667,7 +829,6 @@
     setInterval(updateQuote, 10000);
     setInterval(updateStudyTip, 60000);
     
-    /* ---------- Calendar with Holidays ---------- */
     const calendarEl = document.getElementById('calendar');
     const calendarMonthEl = document.getElementById('calendar-month');
     
@@ -679,19 +840,7 @@
       { date: "2024-01-26", name: "Republic Day" },
       { date: "2024-03-25", name: "Holi" },
       { date: "2024-08-15", name: "Independence Day" },
-      { date: "2024-10-02", name: "Gandhi Jayanti" },
-      { date: "2025-01-26", name: "Republic Day" },
-      { date: "2025-03-14", name: "Holi" },
-      { date: "2025-08-15", name: "Independence Day" },
-      { date: "2025-10-02", name: "Gandhi Jayanti" },
-      { date: "2026-01-26", name: "Republic Day" },
-      { date: "2026-03-03", name: "Holi" },
-      { date: "2026-08-15", name: "Independence Day" },
-      { date: "2026-10-02", name: "Gandhi Jayanti" },
-      { date: "2027-01-26", name: "Republic Day" },
-      { date: "2027-03-23", name: "Holi" },
-      { date: "2027-08-15", name: "Independence Day" },
-      { date: "2027-10-02", name: "Gandhi Jayanti" }
+      { date: "2024-10-02", name: "Gandhi Jayanti" }
     ];
     
     function generateCalendar() {
@@ -701,35 +850,25 @@
       const lastDay = new Date(year, month + 1, 0);
       const startWeekday = firstDay.getDay();
       
-      const monthName = firstDay.toLocaleString(undefined, { month: 'long' });
-      calendarMonthEl.textContent = `${monthName}, ${year}`;
-      
+      calendarMonthEl.textContent = `${firstDay.toLocaleString('default', { month: 'long' })}, ${year}`;
       calendarEl.innerHTML = "";
       
-      // Abbreviated day names for header
-      const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      daysOfWeek.forEach(day => {
+      ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => {
         const headerCell = document.createElement("div");
         headerCell.className = "calendar-header";
         headerCell.textContent = day;
         calendarEl.appendChild(headerCell);
       });
       
-      // Blank cells before the 1st
       for (let i = 0; i < startWeekday; i++) {
-        const emptyCell = document.createElement("div");
-        emptyCell.className = "calendar-cell";
-        emptyCell.innerHTML = "&nbsp;";
-        calendarEl.appendChild(emptyCell);
+        calendarEl.appendChild(document.createElement("div")).className = "calendar-cell";
       }
       
-      // Fill cells for each day
       for (let d = 1; d <= lastDay.getDate(); d++) {
         const cell = document.createElement("div");
         cell.className = "calendar-cell";
         cell.textContent = d;
-        let cellDate = new Date(year, month, d);
-        let cellKey = cellDate.toISOString().split('T')[0];
+        const cellKey = new Date(year, month, d).toISOString().split('T')[0];
         holidays.forEach(holiday => {
           if (holiday.date === cellKey) {
             const tooltip = document.createElement("div");
@@ -743,36 +882,30 @@
     }
     generateCalendar();
     
-    /* ---------- Music Player JavaScript ---------- */
     const playSoundBtn = document.getElementById('play-sound');
     const songOptionsDiv = document.getElementById('song-options');
     const songOptions = document.querySelectorAll('.song-option');
-    const playerContainer = document.getElementById('player-container');
     const ytplayer = document.getElementById('ytplayer');
     
-    // Toggle song options visibility when clicking the music button.
     playSoundBtn.addEventListener('click', () => {
       songOptionsDiv.classList.toggle('visible');
+      playSoundBtn.setAttribute('aria-expanded', songOptionsDiv.classList.contains('visible'));
     });
     
-    // Convert a YouTube watch URL to an embed URL with autoplay.
     function convertToEmbed(url) {
       try {
-        let urlObj = new URL(url);
-        let videoId = urlObj.searchParams.get("v");
-        return "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+        const videoId = new URL(url).searchParams.get("v");
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
       } catch (error) {
-        return url; // Fallback to the original URL if conversion fails.
+        console.error('Error converting URL:', error);
+        return url;
       }
     }
     
-    // When a song option is clicked, load its video into the embedded player.
     songOptions.forEach(option => {
       option.addEventListener('click', () => {
-        const selectedUrl = option.dataset.url;
-        const embedUrl = convertToEmbed(selectedUrl);
-        ytplayer.src = embedUrl;
-        playerContainer.style.display = "block";
+        document.getElementById('player-container').style.display = "block";
+        ytplayer.src = convertToEmbed(option.dataset.url);
       });
     });
   </script>
