@@ -6,12 +6,30 @@
   <title>QBs / Modules</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Added Back Button Styles */
+    :root {
+      --primary: #6366f1;
+      --secondary: #ec4899;
+      --accent: #3b82f6;
+      --background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #2a2a2a);
+      --surface: rgba(255, 255, 255, 0.05);
+      --text: #f8fafc;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
     .back-button {
       position: fixed;
       top: 1.5rem;
       left: 1.5rem;
-      z-index: 3;
+      z-index: 99;
       background: var(--primary);
       color: white;
       border: none;
@@ -23,70 +41,17 @@
       justify-content: center;
       cursor: pointer;
       font-size: 1.2rem;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      text-decoration: none;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-
-    .back-button:hover {
-      transform: scale(1.1);
-      opacity: 0.9;
-    }
-
-    @media (max-width: 768px) {
-      .back-button {
-        top: 1rem;
-        left: 1rem;
-        width: 36px;
-        height: 36px;
-        font-size: 1rem;
-      }
-    }
-    /* End of Back Button Styles */
-
-    :root {
-      --primary: #6366f1;
-      --secondary: #ec4899;
-      --accent: #3b82f6;
-      --background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #2a2a2a);
-      --surface: rgba(255, 255, 255, 0.05);
-      --text: #f8fafc;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: var(--background);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-
+    .back-button:hover { transform: scale(1.1); }
     #particles {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
       z-index: 1;
     }
-
-    .particle {
-      position: absolute;
-      background: rgba(255,255,255,0.8);
-      border-radius: 50%;
-      animation: fall linear infinite;
-      filter: blur(1px);
-    }
-
-    @keyframes fall {
-      0% { transform: translateY(-100vh); }
-      100% { transform: translateY(100vh); }
-    }
-
     .content {
       position: relative;
       z-index: 2;
@@ -94,30 +59,24 @@
       max-width: 1440px;
       margin: 0 auto;
     }
-
     .title {
-      font-size: 3.5rem;
+      font-size: 3rem;
       text-align: center;
-      margin: 2rem 0;
+      margin: 1.5rem 0;
       background: linear-gradient(45deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.3));
       animation: float 3s ease-in-out infinite;
     }
-
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
+      0%,100% { transform: translateY(0); }
       50% { transform: translateY(-8px); }
     }
-
     .search-container {
-      margin: 2rem auto;
-      width: 90%;
-      max-width: 600px;
+      width: 90%; max-width: 600px;
+      margin: 1rem auto 2rem;
       position: relative;
     }
-
     .search-container input {
       width: 100%;
       padding: 1rem 3.5rem;
@@ -126,209 +85,109 @@
       background: var(--surface);
       color: var(--text);
       font-size: 1.1rem;
-      transition: all 0.3s ease;
+      transition: box-shadow 0.3s ease;
     }
-
     .search-container input:focus {
       outline: none;
       box-shadow: 0 0 0 2px var(--primary);
     }
-
     .search-icon {
       position: absolute;
-      left: 1.5rem;
-      top: 50%;
+      left: 1.5rem; top: 50%;
       transform: translateY(-50%);
       font-size: 1.2rem;
       opacity: 0.7;
     }
-
     .box-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 2rem;
-      padding: 2rem 0;
+      padding-bottom: 3rem;
     }
-
     .box {
       background: var(--surface);
       border-radius: 16px;
       padding: 1.5rem;
+      border: 1px solid rgba(255,255,255,0.1);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-
     .box:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      transform: translateY(-6px);
       border-color: var(--primary);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3);
     }
-
     .image-container {
-      width: 100%;
-      height: 200px;
+      width: 100%; height: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.2);
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      overflow: hidden;
     }
-
-    .box img {
-      max-width: 100%;
-      max-height: 100%;
+    .image-container img {
+      width: 100%; height: 100%;
       object-fit: contain;
       transition: transform 0.3s ease;
     }
-
-    .box:hover img {
-      transform: scale(1.05);
-    }
-
+    .box:hover img { transform: scale(1.05); }
     .box h3 {
-      margin: 0 0 1rem;
-      font-weight: 600;
-      color: var(--text);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       text-align: center;
+      margin: 0.5rem 0 1rem;
     }
-
     .button-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 0.8rem;
-      margin-top: 1rem;
+      gap: 0.7rem;
     }
-
     .button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
+      background: linear-gradient(45deg, var(--primary), var(--accent));
       padding: 0.75rem;
       border: none;
       border-radius: 8px;
-      background: linear-gradient(45deg, var(--primary), var(--accent));
+      text-align: center;
       color: white;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
-
-    .button:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-    }
-
+    .button:hover { opacity: 0.9; transform: translateY(-2px); }
     .fab {
       position: fixed;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 56px;
-      height: 56px;
+      width: 56px; height: 56px;
       border-radius: 16px;
       background: var(--primary);
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
-      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+      transition: transform 0.3s ease;
       z-index: 100;
       border: none;
       cursor: pointer;
     }
-
-    .fab:hover {
-      transform: scale(1.1);
-    }
-
-    #backToTop {
-      bottom: 2rem;
-      right: 2rem;
-    }
-
-    #tgIcon {
-      bottom: 8rem;
-      right: 2rem;
-      background: #0088cc;
-    }
-
-    .tg-logo {
-      width: 24px;
-      height: 24px;
-      fill: white;
-    }
-
+    .fab:hover { transform: scale(1.1); }
+    #backToTop { bottom: 2rem; right: 2rem; }
+    #tgIcon { bottom: 8rem; right: 2rem; background: #0088cc; }
+    .tg-logo { width: 24px; height: 24px; fill: white; }
     @media (max-width: 768px) {
-      .content {
-        padding: 1.5rem;
-      }
-
-      .title {
-        font-size: 2.2rem;
-        margin: 1rem 0;
-      }
-
-      .search-container {
-        width: 95%;
-        margin: 1.5rem auto;
-      }
-
-      .search-container input {
-        padding: 0.9rem 3rem;
-        font-size: 1rem;
-      }
-
-      .search-icon {
-        left: 1.2rem;
-        font-size: 1rem;
-      }
-
-      .box-container {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        padding: 1rem 0;
-      }
-
-      .box {
-        padding: 1.2rem;
-      }
-
-      .image-container {
-        height: 180px;
-      }
-
-      .button-container {
-        gap: 0.6rem;
-      }
-
-      #backToTop {
-        bottom: 6rem;
-        right: 1.5rem;
-        width: 50px;
-        height: 50px;
-      }
-
-      #tgIcon {
-        bottom: 1.5rem;
-        right: 1.5rem;
-        width: 50px;
-        height: 50px;
-        border-radius: 14px;
-      }
-
-      .tg-logo {
-        width: 22px;
-        height: 22px;
-      }
+      .content { padding: 1.5rem; }
+      .title { font-size: 2rem; }
+      .search-container input { padding: 0.8rem 2.5rem; font-size: 1rem; }
+      .search-icon { left: 1rem; font-size: 1rem; }
+      .box-container { grid-template-columns: 1fr; gap: 1.2rem; }
+      .image-container { height: 180px; }
+      .button { font-size: 0.95rem; padding: 0.65rem; }
+      .back-button { width: 36px; height: 36px; font-size: 1rem; top: 1rem; left: 1rem; }
+      #backToTop { width: 50px; height: 50px; bottom: 6rem; right: 1.5rem; }
+      #tgIcon { width: 50px; height: 50px; bottom: 1.5rem; right: 1.5rem; border-radius: 14px; }
+      .tg-logo { width: 22px; height: 22px; }
     }
   </style>
 </head>
@@ -337,17 +196,17 @@
   <div id="particles"></div>
 
   <div class="content">
-    <h1 class="title">Question Banks / Modules </h1>
-    
+    <h1 class="title">Question Banks / Modules</h1>
+
     <div class="search-container">
       <span class="search-icon">🔍</span>
       <input type="text" id="search" placeholder="Search books..." />
     </div>
-    
+
     <div class="box-container">
       <div class="box" data-title="Arjuna JEE Modules">
         <div class="image-container">
-          <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png" alt="Book Cover">
+          <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/8691f6ca-2ea2-4cbf-8b2e-9c82fc53bf4a.png" alt="Arjuna JEE Modules">
         </div>
         <h3>Arjuna JEE Modules Latest Part 1</h3>
         <div class="button-container">
@@ -358,7 +217,7 @@
 
       <div class="box" data-title="Allen Kota JEE Modules">
         <div class="image-container">
-          <img src="https://rukminim2.flixcart.com/image/850/1000/xif0q/book/2/1/t/allen-study-material-for-neet-original-imah5h84wgxhxkva.jpeg?q=90&crop=false" alt="Book Cover">
+          <img src="https://rukminim2.flixcart.com/image/850/1000/xif0q/book/2/1/t/allen-study-material-for-neet-original-imah5h84wgxhxkva.jpeg?q=90&crop=false" alt="Allen Kota JEE">
         </div>
         <h3>Allen Kota JEE Modules</h3>
         <div class="button-container">
@@ -367,9 +226,9 @@
         </div>
       </div>
 
-    <div class="box" data-title="Cengage PCM">
+      <div class="box" data-title="Cengage PCM">
         <div class="image-container">
-          <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTjZo_xz4uOnNE3UOePMZoMouVjCH58vA5TBAqMqss3fvaR45q8h8b59Olmpu4yfy_KHKHg53w4NFeO0spXt2iDzlEKnsOna4tPF6r3-oQ&usqp=CAE" alt="Book Cover">
+          <img src="https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTjZo_xz4uOnNE3UOePMZoMouVjCH58vA5TBAqMqss3fvaR45q8h8b59Olmpu4yfy_KHKHg53w4NFeO0spXt2iDzlEKnsOna4tPF6r3-oQ&usqp=CAE" alt="Cengage PCM">
         </div>
         <h3>Cengage PCM</h3>
         <div class="button-container">
@@ -378,9 +237,9 @@
         </div>
       </div>
 
-<div class="box" data-title="DC Pandey">
+      <div class="box" data-title="DC Pandey">
         <div class="image-container">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR-ExkNgdVH8BCksm1o283WSl0iWj6rY1tZg&s" alt="Book Cover">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR-ExkNgdVH8BCksm1o283WSl0iWj6rY1tZg&s" alt="DC Pandey">
         </div>
         <h3>DC Pandey</h3>
         <div class="button-container">
@@ -389,10 +248,9 @@
         </div>
       </div>
 
-
-<div class="box" data-title="Arihant Handbook PCM">
+      <div class="box" data-title="Arihant Handbook PCM">
         <div class="image-container">
-          <img src="https://m.media-amazon.com/images/I/31o3BAeNq-L._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+          <img src="https://m.media-amazon.com/images/I/31o3BAeNq-L._AC_UF1000,1000_QL80_.jpg" alt="Arihant Handbook PCM">
         </div>
         <h3>Arihant Handbook PCM</h3>
         <div class="button-container">
@@ -401,10 +259,9 @@
         </div>
       </div>
 
-
-<div class="box" data-title="Xam Idea Eng,Bio,Chem">
+      <div class="box" data-title="Xam Idea Eng,Bio,Chem">
         <div class="image-container">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRalwFsz7eYd43g3G85BnK2BMZNRhEjftrrg&s" alt="Book Cover">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRalwFsz7eYd43g3G85BnK2BMZNRhEjftrrg&s" alt="Xam Idea Eng,Bio,Chem">
         </div>
         <h3>Xam Idea Eng,Bio,Chem</h3>
         <div class="button-container">
@@ -413,10 +270,9 @@
         </div>
       </div>
 
-
-<div class="box" data-title="Vidyamandir Modules JEE">
+      <div class="box" data-title="Vidyamandir Modules JEE">
         <div class="image-container">
-          <img src="https://content.jdmagicbox.com/comp/def_content_category/vidyamandir-classes/326802581-708410757565650-6332599422984688343-n-vidyamandir-classes-1-l9umx-250.jpg" alt="Book Cover">
+          <img src="https://content.jdmagicbox.com/comp/def_content_category/vidyamandir-classes/326802581-708410757565650-6332599422984688343-n-vidyamandir-classes-1-l9umx-250.jpg" alt="Vidyamandir JEE">
         </div>
         <h3>Vidyamandir Modules JEE</h3>
         <div class="button-container">
@@ -425,10 +281,9 @@
         </div>
       </div>
 
-
-<div class="box" data-title="Unacademy Modules JEE+NEET">
+      <div class="box" data-title="Unacademy Modules JEE+NEET">
         <div class="image-container">
-          <img src="https://www.thearcweb.com/_next/image?url=https%3A%2F%2Fstatic.thearcweb.com%2Fimages%2FPROD%2FPROD-68887db1-1cfd-4506-948d-97bdad084ead.png%3Fw%3D96%26q%3D75&w=256&q=75" alt="Book Cover">
+          <img src="https://static.thearcweb.com/images/PROD/PROD-68887db1-1cfd-4506-948d-97bdad084ead.png?w=96&q=75" alt="Unacademy Modules">
         </div>
         <h3>Unacademy Modules JEE and NEET Both</h3>
         <div class="button-container">
@@ -437,20 +292,20 @@
         </div>
       </div>
 
-<div class="box" data-title="Esaral Modules JEE">
+      <div class="box" data-title="Esaral Modules JEE">
         <div class="image-container">
-          <img src="https://m.media-amazon.com/images/I/81giHldME9L._AC_UF350,350_QL80_.jpg" alt="Book Cover">
+          <img src="https://m.media-amazon.com/images/I/81giHldME9L._AC_UF350,350_QL80_.jpg" alt="Esaral JEE">
         </div>
         <h3>Esaral Modules JEE</h3>
         <div class="button-container">
-          <a href="https://linkcents.com/dblas0c" class="button">Get 📥</a>
+          <a href="https://linkcents.com/dblas0c" target="_blank" class="button">Get 📥</a>
           <a href="https://youtu.be/zeNvSYmgjUw?si=sdNP6CG-Zw5kBh3z" target="_blank" class="button">Download Method ⬇️</a>
         </div>
       </div>
 
-<div class="box" data-title="Motion Module JEE">
+      <div class="box" data-title="Motion Module JEE">
         <div class="image-container">
-          <img src="https://media.licdn.com/dms/image/v2/C510BAQHxJqjteTCZOA/company-logo_200_200/company-logo_200_200/0/1631437550154?e=2147483647&v=beta&t=Fi_cDFcrr460ebAjoHhRLhKV1s0CVpULmd4-Yqh-z3I" alt="Book Cover">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4UdbAmK2jwosaL4JW4D04nje-7luTiJfBEQ&s" alt="Motion JEE">
         </div>
         <h3>Motion Module JEE</h3>
         <div class="button-container">
@@ -459,10 +314,9 @@
         </div>
       </div>
 
-<div class="box-container">
       <div class="box" data-title="Arjuna NEET Modules">
         <div class="image-container">
-          <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/6a705ddf-a9fc-4bc1-bd77-827f022fbf2c.png" alt="Book Cover">
+          <img src="https://d2bps9p1kiy4ka.cloudfront.net/5eb393ee95fab7468a79d189/6a705ddf-a9fc-4bc1-bd77-827f022fbf2c.png" alt="Arjuna NEET">
         </div>
         <h3>Arjuna NEET Modules</h3>
         <div class="button-container">
@@ -471,10 +325,9 @@
         </div>
       </div>
 
-<div class="box-container">
       <div class="box" data-title="NCERT Highlights NEET [ PCB ]">
         <div class="image-container">
-          <img src="https://static6.tgstat.ru/channels/_0/45/451b22c2dfe19518369b73b01c6d0e15.jpg" alt="Book Cover">
+          <img src="https://static6.tgstat.ru/channels/_0/45/451b22c2dfe19518369b73b01c6d0e15.jpg" alt="NCERT NEET">
         </div>
         <h3>NCERT Highlights NEET [ PCB ]</h3>
         <div class="button-container">
@@ -483,10 +336,9 @@
         </div>
       </div>
 
-<div class="box-container">
       <div class="box" data-title="RD Sharma Applied Maths [ Commerce ]">
         <div class="image-container">
-          <img src="https://m.media-amazon.com/images/I/A1W+4Lidf0L._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+          <img src="https://m.media-amazon.com/images/I/A1W+4Lidf0L._AC_UF1000,1000_QL80_.jpg" alt="RD Sharma Commerce">
         </div>
         <h3>RD Sharma Applied Maths [ Commerce ]</h3>
         <div class="button-container">
@@ -497,75 +349,56 @@
     </div>
   </div>
 
-
-
   <button class="fab" id="backToTop">↑</button>
   <a class="fab" id="tgIcon" href="https://t.me/Cbsebooks10th" target="_blank">
     <svg class="tg-logo" viewBox="0 0 24 24">
-      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.2-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
     </svg>
   </a>
 
   <script>
-
-
-
-
-
     // Disable right-click context menu
-document.addEventListener("contextmenu", function(e) {
-  e.preventDefault();
-});
+    document.addEventListener("contextmenu", function(e) { e.preventDefault(); });
 
-// Disable certain key combinations (F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U)
-document.addEventListener("keydown", function(e) {
-  // F12
-  if (e.keyCode === 123) {
-    e.preventDefault();
-  }
-  // Ctrl+Shift+I
-  if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
-    e.preventDefault();
-  }
-  // Ctrl+Shift+J
-  if (e.ctrlKey && e.shiftKey && e.keyCode === 74) {
-    e.preventDefault();
-  }
-  // Ctrl+U
-  if (e.ctrlKey && e.keyCode === 85) {
-    e.preventDefault();
-  }
-});
+    // Disable F12, Ctrl+Shift+I/J, Ctrl+U
+    document.addEventListener("keydown", function(e) {
+      if (e.keyCode === 123 ||
+         (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+         (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+      }
+    });
+
+    // Particle effect
     function createParticles() {
       const container = document.getElementById('particles');
       for (let i = 0; i < 150; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = `${Math.random() * 100}%`;
-        const size = 2 + Math.random() * 6;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.animationDuration = `${5 + Math.random() * 10}s`;
-        particle.style.animationDelay = `-${Math.random() * 10}s`;
-        container.appendChild(particle);
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random()*100 + '%';
+        const size = 2 + Math.random()*6;
+        p.style.width = p.style.height = size + 'px';
+        p.style.animationDuration = (5 + Math.random()*10) + 's';
+        p.style.animationDelay = '-' + Math.random()*10 + 's';
+        container.appendChild(p);
       }
     }
     createParticles();
 
+    // Search filter
     const searchInput = document.getElementById('search');
     const boxes = document.querySelectorAll('.box');
-
     searchInput.addEventListener('input', function() {
-      const query = this.value.toLowerCase();
-      boxes.forEach(box => {
-        const title = box.getAttribute('data-title').toLowerCase();
-        box.style.display = title.includes(query) ? 'block' : 'none';
+      const q = this.value.toLowerCase();
+      boxes.forEach(b => {
+        b.style.display = b.dataset.title.toLowerCase().includes(q) ? 'block' : 'none';
       });
     });
 
+    // Back to top
     const backToTop = document.getElementById('backToTop');
     window.addEventListener('scroll', () => {
-      backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+      backToTop.style.display = window.scrollY > 300 ? 'flex' : 'none';
     });
     backToTop.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
