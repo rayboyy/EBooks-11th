@@ -1,493 +1,753 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Test Series / SQP Marks Analyzer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>🗓️ Premium Student Daily Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* --- ORIGINAL UNCHANGED CSS --- */
     :root {
-      --light-body-bg: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-      --light-text: #2d3748;
-      --light-container-bg: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-      --dark-body-bg: linear-gradient(135deg, #232526 0%, #414345 100%);
-      --dark-text: #f7fafc;
-      --dark-container-bg: linear-gradient(135deg, #1a1b1c 0%, #2d2f30 100%);
-      --accent-primary: #4f46e5;
-      --accent-secondary: #6366f1;
-      --font-family: 'Montserrat', sans-serif;
-      --transition-speed: 0.3s;
-      --border-radius: 12px;
+      --bg-gradient-light: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      --container-bg-light: linear-gradient(145deg, #ffffff, #f8f9ff);
+      --btn-gradient-light: linear-gradient(135deg, #6a11cb, #2575fc);
+      --holiday-bg-light: #ff073a;
+      --music-gradient-light: linear-gradient(135deg, #667eea, #764ba2);
+      --bg-gradient-dark: linear-gradient(135deg, #232526, #414345);
+      --container-bg-dark: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+      --btn-gradient-dark: linear-gradient(135deg, #0f2027, #203a43);
+      --holiday-bg-dark: #ff4d4d;
+      --music-gradient-dark: linear-gradient(135deg, #434343, #000000);
+      --primary-font: 'Poppins', sans-serif;
+      --heading-size: 2rem;
+      --subheading-size: 1.5rem;
+      --text-size: 1rem;
+      --high-priority: #ff4444;
+      --medium-priority: #ffa500;
+      --low-priority: #4CAF50;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: var(--font-family);
-      background: var(--light-body-bg);
-      color: var(--light-text);
+      font-family: var(--primary-font);
+      background: var(--bg-gradient-light);
+      color: #333;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 1rem;
       min-height: 100vh;
-      transition: background var(--transition-speed), color var(--transition-speed);
+      transition: background 0.4s, color 0.4s;
     }
-
     body.dark {
-      background: var(--dark-body-bg);
-      color: var(--dark-text);
+      background: var(--bg-gradient-dark);
+      color: #ddd;
     }
-
-    h1 {
-      margin: 1rem 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-      text-align: center;
-      color: var(--accent-primary);
-      padding: 0 1rem;
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    #dark-mode-toggle {
+      position: fixed; bottom: 20px; right: 20px;
+      background: var(--btn-gradient-light); color: white;
+      padding: 10px 15px; border: none; border-radius: 8px;
+      cursor: pointer; font-size: 16px; transition: 0.3s; z-index: 100;
+      box-shadow: var(--shadow);
     }
-
-    .container {
-      background: var(--light-container-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-      width: 100%;
-      max-width: 960px;
-      padding: 1.5rem;
-      margin: 1rem 0;
-      transition: all var(--transition-speed);
+    body.dark #dark-mode-toggle { background: var(--btn-gradient-dark); }
+    .planner-container {
+      background: var(--container-bg-light);
+      width: 100%; max-width: 800px;
+      border-radius: 12px; box-shadow: var(--shadow);
+      padding: 1.5rem; margin-bottom: 1.5rem;
+      transition: background 0.3s;
     }
-
-    body.dark .container {
-      background: var(--dark-container-bg);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    body.dark .planner-container { background: var(--container-bg-dark); }
+    .date-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem; gap: 0.5rem; flex-wrap: wrap;
     }
-
-    /* Dark Mode Toggle at Bottom Right */
-    .mode-toggle {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid rgba(0,0,0,0.1);
-      border-radius: 8px;
-      padding: 0.75rem 1.25rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all var(--transition-speed);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .date-display {
+      font-size: var(--subheading-size); font-weight: 600;
+      text-align: center; flex: 1;
     }
-
-    body.dark .mode-toggle {
-      background: rgba(0,0,0,0.9);
-      border-color: rgba(255,255,255,0.1);
-      color: white;
+    .nav-btn {
+      background: var(--btn-gradient-light); color: #fff;
+      border: none; padding: 0.5rem 1rem; border-radius: 6px;
+      cursor: pointer; transition: transform 0.2s, background 0.3s;
+      font-size: 0.9rem; white-space: nowrap;
     }
-
-    .mode-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    body.dark .nav-btn { background: var(--btn-gradient-dark); }
+    .nav-btn:hover { transform: scale(1.05); }
+    .task-search-bar {
+      display: flex; gap: 0.5rem; margin-bottom: 1rem;
+      align-items: center; flex-wrap: wrap;
     }
-
-    .input-group {
-      display: flex;
+    .task-search-bar input {
+      flex: 1; padding: 0.5rem; border-radius: 6px; border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .task-search-bar button {
+      padding: 0.5rem 1rem; border-radius: 6px; border: none;
+      background: var(--btn-gradient-light); color: #fff; cursor: pointer;
+      font-size: 1rem; transition: background 0.3s;
+    }
+    body.dark .task-search-bar button { background: var(--btn-gradient-dark); }
+    form {
+      display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    input[type="text"], textarea, select {
+      padding: 0.75rem; border: 1px solid #ccc; border-radius: 6px;
+      font-size: var(--text-size); width: 100%; -webkit-appearance: none;
+    }
+    button.add-task {
+      padding: 0.75rem; border: none; border-radius: 6px;
+      background: var(--btn-gradient-light); color: #fff;
+      font-size: var(--text-size); cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+    }
+    body.dark button.add-task { background: var(--btn-gradient-dark); }
+    button.add-task:hover { transform: scale(1.02); }
+    .task-list { list-style: none; padding: 0; transition: all 0.3s; }
+    .task-item {
+      border-left: 4px solid; border-radius: 4px; margin-bottom: 0.5rem;
+      padding: 1rem; display: flex; flex-direction: column;
+      font-size: var(--text-size); opacity: 1; transform: translateY(0);
+      transition: opacity 0.3s, transform 0.3s;
+      background: rgba(255,255,255,0.1); position: relative;
+    }
+    body.dark .task-item { background: rgba(0,0,0,0.1); }
+    .task-item.high { border-color: var(--high-priority); }
+    .task-item.medium { border-color: var(--medium-priority); }
+    .task-item.low { border-color: var(--low-priority); }
+    .task-item.adding { opacity: 0; transform: translateY(-10px); }
+    .task-item.removing { opacity: 0; transform: translateY(10px); }
+    .task-header {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;
+    }
+    .priority-indicator {
+      font-size: 0.8rem; padding: 0.25rem 0.5rem; border-radius: 12px;
+      display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap;
+    }
+    .high .priority-indicator { background: var(--high-priority); color: #fff; }
+    .medium .priority-indicator { background: var(--medium-priority); color: #fff; }
+    .low .priority-indicator { background: var(--low-priority); color: #fff; }
+    .task-title { font-weight: 600; font-size: 1.1rem; word-break: break-word; }
+    .task-controls { display: flex; gap: 0.5rem; }
+    .task-controls button {
+      padding: 0.4rem 0.8rem; font-size: 0.9rem; border: none; border-radius: 4px;
+      cursor: pointer; transition: transform 0.2s;
+    }
+    .task-controls button.edit { background: #ffb347; color: #333; }
+    .task-controls button.delete { background: #ff073a; color: #fff; }
+    .task-controls button:hover { transform: scale(1.05); }
+    .completed { text-decoration: line-through; opacity: 0.65; }
+    .extra-features {
+      width: 100%; max-width: 800px; margin-bottom: 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
     }
-
-    .input-group select,
-    .input-group input {
-      flex: 1 1 100%;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      background: white;
-      transition: all var(--transition-speed);
+    .feature-box {
+      background: var(--container-bg-light); padding: 1.5rem;
+      border-radius: 12px; box-shadow: var(--shadow); text-align: center;
+      transition: background 0.3s;
     }
-
-    body.dark .input-group select,
-    body.dark .input-group input {
-      background: #2d3748;
-      border-color: #4a5568;
-      color: white;
+    body.dark .feature-box { background: var(--container-bg-dark); }
+    .feature-box h3 { font-size: var(--subheading-size); margin-bottom: 1rem; }
+    .feature-box p { font-size: var(--text-size); }
+    .calendar-container {
+      width: 100%; max-width: 800px; background: var(--container-bg-light);
+      border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow);
+      margin-bottom: 1.5rem; transition: background 0.3s;
     }
-
-    .input-group button {
-      flex: 1 1 auto;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: var(--accent-primary);
-      color: white;
-      transition: all var(--transition-speed);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+    body.dark .calendar-container { background: var(--container-bg-dark); }
+    .calendar-month {
+      text-align: center; font-size: var(--subheading-size);
+      font-weight: 600; margin-bottom: 1rem;
     }
-
-    .input-group button:hover {
-      background: var(--accent-secondary);
-      transform: translateY(-1px);
+    #calendar {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
     }
-
-    #marksList {
-      margin: 1.5rem 0;
-      background: rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 1rem;
+    .calendar-cell {
+      background: #f4f4f4; padding: 0.5rem; text-align: center;
+      border-radius: 6px; transition: background 0.3s, transform 0.2s;
+      font-size: 0.9rem; position: relative; cursor: pointer;
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      outline: none;
     }
-
-    #marksList p {
-      margin: 0.5rem 0;
-      padding: 0.75rem;
-      background: white;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
+    body.dark .calendar-cell { background: #3a3a3a; }
+    .calendar-cell.selected, .calendar-cell:focus {
+      background: var(--btn-gradient-light); color: #fff; outline: 2px solid #2575fc;
+      z-index: 1;
     }
-
-    body.dark #marksList p {
-      background: #2d3748;
+    body.dark .calendar-cell.selected, body.dark .calendar-cell:focus {
+      background: var(--btn-gradient-dark);
     }
-
-    .analysis {
-      margin: 1.5rem 0;
-      padding: 1rem;
-      background: rgba(79,70,229,0.1);
-      border-radius: 8px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 1rem;
-      text-align: center;
+    .calendar-cell.today {
+      border: 2px solid #2575fc;
+      font-weight: bold;
     }
-
-    .analysis p {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--accent-primary);
-      margin: 0;
+    .calendar-header {
+      font-weight: 600; background: #ddd; padding: 0.5rem;
+      border-radius: 6px; text-align: center; font-size: 0.9rem;
     }
-
-    .chart-container {
-      position: relative;
-      width: 100%;
-      height: 400px;
-      margin-top: 1.5rem;
+    body.dark .calendar-header { background: #555; }
+    .tooltip {
+      position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.75); color: #fff; padding: 0.25rem 0.5rem;
+      border-radius: 4px; font-size: 0.8rem; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10;
     }
-
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .container {
-        padding: 1rem;
-      }
-
-      .input-group button {
-        width: 100%;
-      }
-
-      .chart-container {
-        height: 300px;
-      }
+    .calendar-cell:hover .tooltip, .calendar-cell:focus .tooltip { opacity: 1; }
+    #motivation-sound { position: relative; overflow: hidden; }
+    #play-sound {
+      background: var(--music-gradient-light); border: none; border-radius: 12px;
+      padding: 1rem 2rem; color: white; cursor: pointer; font-size: 16px;
+      transition: all 0.3s;
     }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.4rem;
-      }
-
-      .mode-toggle {
-        bottom: 0.5rem;
-        right: 0.5rem;
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-      }
-
-      .input-group select,
-      .input-group input {
-        font-size: 0.9rem;
-      }
-
-      .input-group button {
-        font-size: 0.9rem;
-        padding: 0.6rem;
-      }
-
-      #marksList p {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-        font-size: 0.8rem;
-      }
+    body.dark #play-sound { background: var(--music-gradient-dark); }
+    #play-sound:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+    #song-options {
+      margin-top: 1rem; max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height 0.4s, opacity 0.4s;
+      display: flex; flex-direction: column; align-items: center;
+      width: 100%; max-width: 250px; background: rgba(255,255,255,0.1);
+      border-radius: 10px; padding: 10px;
     }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    #song-options.visible { max-height: 150px; opacity: 1; overflow-y: auto; }
+    .song-option {
+      padding: 10px; margin: 5px 0; cursor: pointer; transition: 0.3s;
+      background: rgba(255,255,255,0.2); border-radius: 6px; text-align: center; width: 100%;
     }
-
-    .slide-in {
-      animation: slideIn 0.3s ease-out;
+    .song-option:hover { background: rgba(255,255,255,0.3); transform: translateX(5px); }
+    body.dark .song-option { background: rgba(0,0,0,0.2); }
+    body.dark .song-option:hover { background: rgba(0,0,0,0.3); }
+    #player-container {
+      /* THIS IS NOW HIDDEN OFF-SCREEN, NOT WITH DISPLAY:NONE, to fix playback bug */
+      position: absolute; top: -9999px; left: -9999px;
+      width: 1px; height: 1px; opacity: 0;
     }
+    #ytplayer { width: 100%; height: 100%; border: none; }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; text-align: center; }
+      .planner-container, .calendar-container { padding: 1rem; }
+      .date-nav { flex-wrap: wrap; }
+      .nav-btn { flex: 1; padding: 0.5rem; font-size: 0.8rem; }
+      .date-display { font-size: 1rem; order: -1; width: 100%; margin-bottom: 0.5rem; }
+      .task-header { flex-wrap: wrap; gap: 0.5rem; }
+      .task-controls { width: 100%; justify-content: flex-end; }
+      .priority-indicator { font-size: 0.7rem; }
+      .feature-box { padding: 1rem; }
+      .feature-box h3 { font-size: 1.1rem; }
+      .calendar-cell { font-size: 0.8rem; padding: 0.25rem; }
+      #play-sound { padding: 0.75rem 1rem; font-size: 14px; }
+      .song-option { padding: 8px; font-size: 0.9rem; }
+      #dark-mode-toggle { padding: 8px 12px; font-size: 14px; bottom: 10px; right: 10px; }
+    }
+    @media (max-width: 400px) {
+      .task-controls button { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+      .priority-indicator { font-size: 0.6rem; }
+    }
+  </style>
+
+  <!-- NEW PREMIUM STYLES & ANIMATIONS -->
+  <style>
+    /* 1. Premium Aesthetics: Animated Background & Glassmorphism */
+    @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+    
+    body {
+        -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        background-size: 200% 200% !important;
+        animation: gradient-animation 15s ease infinite;
+        overflow-x: hidden;
+    }
+    main { width: 100%; display: flex; flex-direction: column; align-items: center; }
+    h1 { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+    .planner-container { animation: fadeInUp 0.5s 0.1s ease-out forwards; opacity: 0; }
+    .extra-features { animation: fadeInUp 0.5s 0.2s ease-out forwards; opacity: 0; }
+    .calendar-container { animation: fadeInUp 0.5s 0.3s ease-out forwards; opacity: 0; }
+
+    .planner-container, .feature-box, .calendar-container, .edit-modal-content {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .planner-container:hover, .feature-box:hover, .calendar-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+    }
+    body.dark .planner-container, body.dark .feature-box, body.dark .calendar-container, body.dark .edit-modal-content {
+        background: rgba(40, 40, 40, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* 2. Enhanced Button & Interactive Element Hovers */
+    .nav-btn, button.add-task, #dark-mode-toggle, #play-sound {
+        background-size: 200% auto !important;
+        transition: all 0.4s ease !important;
+    }
+    .nav-btn:hover, button.add-task:hover, #dark-mode-toggle:hover, #play-sound:hover {
+        background-position: right center !important;
+        transform: scale(1.05);
+    }
+    .task-item { transition: background-color 0.3s ease; }
+    .task-item:hover { background: rgba(255, 255, 255, 0.2); }
+    body.dark .task-item:hover { background: rgba(0, 0, 0, 0.2); }
+    .calendar-cell:hover, .calendar-cell:focus { transform: scale(1.1); z-index: 2; }
+    
+    /* 3. New Mobile Music Player (Bottom Sheet) & Mini Player */
+    .music-bottom-sheet-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 101;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+    .music-bottom-sheet-overlay.visible { opacity: 1; pointer-events: auto; }
+    .music-bottom-sheet {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-top-left-radius: 20px; border-top-right-radius: 20px;
+        padding: 1rem; padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+        box-shadow: 0 -5px 30px rgba(0,0,0,0.15);
+        transform: translateY(100%); transition: transform 0.4s ease-out;
+    }
+    .music-bottom-sheet.visible { transform: translateY(0); }
+    body.dark .music-bottom-sheet { background: rgba(40, 40, 40, 0.8); }
+    .music-sheet-header { text-align: center; padding-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 1rem; position: relative; }
+    body.dark .music-sheet-header { border-bottom-color: rgba(255,255,255,0.1); }
+    .music-sheet-header::before { content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 40px; height: 5px; background: #ccc; border-radius: 3px; }
+    .music-sheet-header h4 { font-size: 1.2rem; font-weight: 600; margin: 0; }
+    #music-sheet-close { position: absolute; top: -5px; right: 0; font-size: 1.5rem; background: none; border: none; cursor: pointer; color: #888; }
+    body.dark #music-sheet-close { color: #aaa; }
+    #mobile-song-list { max-height: 50vh; overflow-y: auto; }
+    #mobile-song-list .song-option { background: rgba(0,0,0,0.05); text-align: left; padding: 12px 15px; }
+    body.dark #mobile-song-list .song-option { background: rgba(255,255,255,0.05); }
+
+    .song-option.active {
+        background: var(--btn-gradient-light) !important; color: white;
+        animation: pulse 2s infinite;
+    }
+    body.dark .song-option.active { background: var(--btn-gradient-dark) !important; }
+
+    @media (max-width: 768px) { #play-sound + #song-options { display: none !important; } }
+    
+    /* 4. Mini Player Styles */
+    #mini-player {
+        position: fixed; bottom: 1rem; left: 1rem; right: 1rem; max-width: 400px; margin: auto;
+        padding: 0.75rem 1rem; z-index: 100;
+        background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        display: flex; align-items: center; gap: 1rem;
+        transform: translateY(150%); opacity: 0; transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    }
+    #mini-player.visible { transform: translateY(0); opacity: 1; }
+    body.dark #mini-player { background: rgba(40,40,40,0.6); border-color: rgba(255,255,255,0.2); }
+    .mini-player-info { flex-grow: 1; text-align: left; overflow: hidden; }
+    #mini-player-title { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mini-player-controls { display: flex; align-items: center; gap: 1rem; }
+    .mini-player-controls button { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #333; padding: 0; transition: transform 0.2s ease; }
+    .mini-player-controls button:hover { transform: scale(1.1); }
+    body.dark .mini-player-controls button { color: #ddd; }
+    
+    /* 5. Animated Sound Wave Icon */
+    .sound-wave { display: flex; align-items: flex-end; gap: 2px; height: 16px; }
+    .sound-wave span { width: 3px; height: 100%; background-color: white; border-radius: 2px; animation: wave 1.2s ease-in-out infinite; }
+    .sound-wave span:nth-child(2) { animation-delay: -1.0s; }
+    .sound-wave span:nth-child(3) { animation-delay: -0.8s; }
+    @keyframes wave { 0%, 100% { transform: scaleY(0.1); } 50% { transform: scaleY(1); } }
+
+    /* --- Styles from previous fixes (for completeness) --- */
+    @media (max-width: 480px) { body { padding: 0.5rem; } main { width: 100%; } } .calendar-cell.has-tasks::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--high-priority); box-shadow: 0 0 3px var(--high-priority); } .calendar-cell.selected.has-tasks::after { background: white; } .task-overview { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; } .progress-container { flex-grow: 1; min-width: 150px; } .progress-label { font-size: 0.9rem; margin-bottom: 0.25rem; font-weight: 600; } .progress-bar { width: 100%; height: 10px; background-color: rgba(0,0,0,0.1); border-radius: 5px; overflow: hidden; } body.dark .progress-bar { background-color: rgba(255,255,255,0.1); } .progress-bar-fill { height: 100%; width: 0%; background: var(--btn-gradient-light); border-radius: 5px; transition: width 0.4s ease-in-out; } body.dark .progress-bar-fill { background: var(--btn-gradient-dark); } #task-sort { padding: 0.5rem; border-radius: 6px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.5); } body.dark #task-sort { background: rgba(0,0,0,0.2); color: #ddd; border-color: rgba(255,255,255,0.1); } .edit-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; animation: fadeInUp 0.3s forwards; } .edit-modal-controls button { padding: 0.6rem 1.2rem; cursor: pointer; border:none; border-radius: 6px; transition: transform 0.2s, box-shadow 0.2s; } .edit-modal-controls button:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .toast-notification { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--btn-gradient-light); color: white; padding: 1rem 2rem; border-radius: 8px; z-index: 1001; font-size: 1rem; box-shadow: var(--shadow); opacity: 0; animation: toast-in-out 3s ease-in-out forwards; } body.dark .toast-notification { background: var(--btn-gradient-dark); } @keyframes toast-in-out { 0%, 100% { opacity: 0; transform: translate(-50%, 20px); } 10%, 90% { opacity: 1; transform: translate(-50%, 0); } } .confetti { position: fixed; width: 10px; height: 10px; background-color: #f00; opacity: 0.7; z-index: 2000; pointer-events: none; animation: fall 3s linear forwards; } @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
   </style>
 </head>
 <body>
-  <h1>📊 Test Series & SQP Marks Analyzer</h1>
-  
-  <div class="container">
-    <div class="input-group">
-      <select id="stream">
-        <option value="JEE">JEE (Out of 300)</option>
-        <option value="NEET">NEET (Out of 720)</option>
-        <option value="Other">Other (Custom Total)</option>
-      </select>
-      <input type="number" id="totalMarks" placeholder="Total Marks (Only for Other)" style="display:none;">
-    </div>
-
-    <div class="input-group">
-      <input type="text" id="testName" placeholder="Test Name">
-      <input type="number" id="testMarks" placeholder="Marks Obtained">
-      <button id="addTestBtn">➕ Add Test</button>
-    </div>
-
-    <div id="marksList"></div>
-
-    <div class="input-group">
-      <button id="analyzeBtn">📈 Analyze</button>
-      <button id="sortAscBtn">⬆️ Sort</button>
-      <button id="sortDescBtn">⬇️ Sort</button>
-      <button id="exportBtn">📥 Export</button>
-      <button id="clearBtn">🗑️ Clear</button>
-    </div>
-
-    <div class="analysis" id="analysis"></div>
-
-    <div class="chart-container">
-      <canvas id="marksChart"></canvas>
-    </div>
-  </div>
-
-  <button class="mode-toggle" id="mode-toggle"><span id="mode-icon">🌙</span> Dark Mode</button>
-
-  <script>
-    const elements = {
-      stream: document.getElementById('stream'),
-      totalMarks: document.getElementById('totalMarks'),
-      testName: document.getElementById('testName'),
-      testMarks: document.getElementById('testMarks'),
-      addTestBtn: document.getElementById('addTestBtn'),
-      marksList: document.getElementById('marksList'),
-      analyzeBtn: document.getElementById('analyzeBtn'),
-      clearBtn: document.getElementById('clearBtn'),
-      exportBtn: document.getElementById('exportBtn'),
-      sortAscBtn: document.getElementById('sortAscBtn'),
-      sortDescBtn: document.getElementById('sortDescBtn'),
-      analysis: document.getElementById('analysis'),
-      ctx: document.getElementById('marksChart').getContext('2d'),
-      modeToggle: document.getElementById('mode-toggle'),
-      modeIcon: document.getElementById('mode-icon')
-    };
-
-    let tests = [];
-    let chart;
-
-    // Initialization
-    function init() {
-      loadTests();
-      setupEventListeners();
-    }
-
-    function loadTests() {
-      const storedTests = localStorage.getItem('testSeriesData');
-      if (storedTests) {
-        tests = JSON.parse(storedTests);
-        tests.forEach(test => addTestToList(test));
-      }
-    }
-
-    function setupEventListeners() {
-      elements.stream.addEventListener('change', handleStreamChange);
-      elements.addTestBtn.addEventListener('click', addTest);
-      elements.analyzeBtn.addEventListener('click', analyzeResults);
-      elements.clearBtn.addEventListener('click', clearData);
-      elements.exportBtn.addEventListener('click', exportCSV);
-      elements.sortAscBtn.addEventListener('click', () => sortTests('asc'));
-      elements.sortDescBtn.addEventListener('click', () => sortTests('desc'));
-      elements.modeToggle.addEventListener('click', toggleDarkMode);
-    }
-
-    function handleStreamChange() {
-      elements.totalMarks.style.display = this.value === 'Other' ? 'block' : 'none';
-    }
-
-    function addTest() {
-      const test = {
-        name: elements.testName.value.trim(),
-        marks: parseFloat(elements.testMarks.value),
-        totalMarks: calculateTotalMarks()
-      };
-
-      if (validateTest(test)) {
-        tests.push(test);
-        addTestToList(test);
-        saveTests();
-        clearInputs();
-      }
-    }
-
-    function calculateTotalMarks() {
-      switch(elements.stream.value) {
-        case 'JEE': return 300;
-        case 'NEET': return 720;
-        default: return parseFloat(elements.totalMarks.value) || 100;
-      }
-    }
-
-    function validateTest(test) {
-      if (!test.name || isNaN(test.marks) || test.marks > test.totalMarks) {
-        alert('Please enter valid test details');
-        return false;
-      }
-      return true;
-    }
-
-    function addTestToList(test) {
-      const percentage = ((test.marks / test.totalMarks) * 100).toFixed(2);
-      const entry = document.createElement('p');
-      entry.className = 'slide-in';
-      entry.innerHTML = `
-        <span>${test.name}</span>
-        <span>${test.marks}/${test.totalMarks} (${percentage}%)</span>
-      `;
-      elements.marksList.appendChild(entry);
-    }
-
-    function analyzeResults() {
-      if (!tests.length) return alert("Add test results first");
-      
-      const analysisData = {
-        average: (tests.reduce((sum, t) => sum + t.marks, 0) / tests.length).toFixed(2),
-        max: Math.max(...tests.map(t => t.marks)),
-        min: Math.min(...tests.map(t => t.marks)),
-        best: Math.max(...tests.map(t => (t.marks/t.totalMarks)*100))
-      };
-
-      elements.analysis.innerHTML = `
-        <div class="slide-in">
-          <p>📊 Avg: ${analysisData.average}</p>
-          <p>🚀 High: ${analysisData.max}</p>
-          <p>📉 Low: ${analysisData.min}</p>
-          <p>🏆 Best: ${analysisData.best.toFixed(2)}%</p>
+  <main>
+    <h1>🗓️ Premium Student Daily Planner</h1>
+    <section class="planner-container" aria-labelledby="planner-heading">
+      <h2 id="planner-heading" class="sr-only">Daily Planner</h2>
+      <div class="date-nav">
+        <button class="nav-btn" id="prev-day" aria-label="Previous Day">← Previous</button>
+        <div class="date-display" id="date-display" aria-live="polite">Date Here</div>
+        <button class="nav-btn" id="next-day" aria-label="Next Day">Next →</button>
+      </div>
+      <div class="task-search-bar">
+        <input type="text" id="task-search" placeholder="🔍 Search tasks..." aria-label="Search tasks">
+        <button id="clear-search" title="Clear search" style="display:none;">✖</button>
+      </div>
+      <form id="task-form" aria-labelledby="add-task-heading" autocomplete="off">
+        <h3 id="add-task-heading" class="sr-only">Add New Task</h3>
+        <input type="text" id="task-title" placeholder="Task Title" required aria-required="true">
+        <textarea id="task-desc" placeholder="Task Description" rows="2" required aria-required="true"></textarea>
+        <select id="task-priority" required>
+          <option value="high">🔴 High Priority</option>
+          <option value="medium">🟠 Medium Priority</option>
+          <option value="low">🟢 Low Priority</option>
+        </select>
+        <button type="submit" class="add-task">➕ Add Task</button>
+      </form>
+      <ul id="task-list" class="task-list" aria-labelledby="task-list-heading"></ul>
+      <h3 id="task-list-heading" class="sr-only">Task List</h3>
+    </section>
+    <section class="extra-features" aria-labelledby="features-heading">
+      <h2 id="features-heading" class="sr-only">Extra Features</h2>
+      <div class="feature-box" id="study-tip">
+        <h3>💡 Study Tip</h3>
+        <p id="tip-text">Loading tip...</p>
+      </div>
+      <div class="feature-box" id="quote-of-day">
+        <h3>✨ Quote</h3>
+        <p id="quote-text">Loading quote...</p>
+      </div>
+      <div class="feature-box" id="motivation-sound">
+        <h3>🎵 Lofi Music</h3>
+        <button id="play-sound" aria-expanded="false" aria-controls="song-options">
+          <span class="button-text">▶️ Play Lofi</span>
+        </button>
+        <div id="song-options" role="listbox" aria-label="Song Options">
+            <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=jfKfPfyJRdk">🎵 Lofi Hip Hop Radio</div>
+            <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=DEWzT1geuPU">☕ Rainy Day Coffee Shop</div>
+            <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=4xDzrJKXOOY">🚀 Synthwave Radio</div>
+            <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=3NycM9lYdRI">🌿 Peaceful Piano Radio</div>
+            <div class="song-option" role="option" data-url="https://www.youtube.com/watch?v=EtD7_8kCMHA">🌸 Japanese Lofi</div>
         </div>
-      `;
+        <div id="player-container">
+          <div id="ytplayer"></div>
+        </div>
+      </div>
+    </section>
+    <section class="calendar-container" aria-labelledby="calendar-heading">
+      <h2 id="calendar-heading" class="sr-only">Calendar</h2>
+      <div class="calendar-month" id="calendar-month">Month, Year</div>
+      <div id="calendar" role="grid" aria-label="Calendar"></div>
+    </section>
+  </main>
+  <button id="dark-mode-toggle" aria-label="Toggle Dark Mode">🌗 Toggle Mode</button>
+  
+  <!-- ORIGINAL UNCHANGED SCRIPT -->
+  <script>
+    document.onkeydown = function(e) { if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) { return false; } }; const darkModeBtn = document.getElementById('dark-mode-toggle'); if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark'); darkModeBtn.addEventListener('click', () => { document.body.classList.toggle('dark'); localStorage.setItem('darkMode', document.body.classList.contains('dark')); }); let selectedDate = new Date(); selectedDate.setHours(0, 0, 0, 0); const dateDisplay = document.getElementById('date-display'); function formatFullDate(date) { const options = { weekday: 'short', day: '2-digit', month: 'long', year: 'numeric' }; return date.toLocaleDateString(undefined, options); } function updateDateDisplay() { dateDisplay.textContent = formatFullDate(selectedDate); } updateDateDisplay(); function getDateKey(date) { return date.toISOString().split('T')[0]; } function getTasksForDate(date) { const key = getDateKey(date); try { return JSON.parse(localStorage.getItem(key)) || []; } catch (error) { console.error('Error retrieving tasks:', error); return []; } } function saveTasksForDate(date, tasks) { const key = getDateKey(date); try { localStorage.setItem(key, JSON.stringify(tasks)); } catch (error) { console.error('Error saving tasks:', error); } } const taskSearch = document.getElementById('task-search'); const clearSearchBtn = document.getElementById('clear-search'); let searchQuery = ''; taskSearch.addEventListener('input', function() { searchQuery = this.value.trim().toLowerCase(); renderTasks(); clearSearchBtn.style.display = searchQuery ? 'inline-block' : 'none'; }); clearSearchBtn.addEventListener('click', function() { taskSearch.value = ''; searchQuery = ''; renderTasks(); this.style.display = 'none'; taskSearch.focus(); }); const taskForm = document.getElementById('task-form'); const taskList = document.getElementById('task-list'); function escapeHTML(str) { return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); } function renderTasks() { const tasks = getTasksForDate(selectedDate); taskList.innerHTML = ''; let filtered = tasks; if (searchQuery) { filtered = tasks.filter(task => task.title.toLowerCase().includes(searchQuery) || task.description.toLowerCase().includes(searchQuery)); } filtered.forEach((task, index) => { const li = document.createElement('li'); li.className = `task-item ${task.priority} adding`; li.innerHTML = ` <div class="task-header"> <div> <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})" aria-label="Mark as completed"> <span class="task-title ${task.completed ? 'completed' : ''}">${escapeHTML(task.title)}</span> <span class="priority-indicator"> ${task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟠' : '🟢'} ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} </span> </div> <div class="task-controls"> <button class="edit" onclick="editTask(${index})" aria-label="Edit Task">Edit</button> <button class="delete" onclick="deleteTask(${index})" aria-label="Delete Task">Delete</button> </div> </div> <p class="${task.completed ? 'completed' : ''}">${escapeHTML(task.description)}</p> `; taskList.appendChild(li); setTimeout(() => li.classList.remove('adding'), 50); }); if (filtered.length === 0) { const li = document.createElement('li'); li.className = "task-item"; li.innerHTML = `<em>No tasks found.</em>`; taskList.appendChild(li); } } window.toggleTask = function(index) { const tasks = getTasksForDate(selectedDate); tasks[index].completed = !tasks[index].completed; saveTasksForDate(selectedDate, tasks); renderTasks(); }; window.deleteTask = function(index) { if (confirm("Are you sure you want to delete this task?")) { const tasks = getTasksForDate(selectedDate); const li = taskList.children[index]; li.classList.add('removing'); setTimeout(() => { tasks.splice(index, 1); saveTasksForDate(selectedDate, tasks); renderTasks(); }, 300); } }; window.editTask = function(index) { const tasks = getTasksForDate(selectedDate); const newTitle = prompt("Edit Task Title:", tasks[index].title); const newDesc = prompt("Edit Task Description:", tasks[index].description); const newPriority = prompt("Edit Priority (high/medium/low):", tasks[index].priority); if (newTitle && newDesc && newPriority) { tasks[index].title = newTitle; tasks[index].description = newDesc; tasks[index].priority = newPriority; saveTasksForDate(selectedDate, tasks); renderTasks(); } }; taskForm.addEventListener('submit', (e) => { e.preventDefault(); const title = document.getElementById('task-title').value; const description = document.getElementById('task-desc').value; const priority = document.getElementById('task-priority').value; const tasks = getTasksForDate(selectedDate); tasks.push({ title, description, priority, completed: false }); saveTasksForDate(selectedDate, tasks); renderTasks(); taskForm.reset(); }); document.getElementById('prev-day').addEventListener('click', () => { selectedDate.setDate(selectedDate.getDate() - 1); updateDateDisplay(); renderTasks(); generateCalendar(); }); document.getElementById('next-day').addEventListener('click', () => { selectedDate.setDate(selectedDate.getDate() + 1); updateDateDisplay(); renderTasks(); generateCalendar(); }); renderTasks(); const studyTips = [ "Break study sessions into focused intervals", "Test yourself frequently", "Take short breaks", "Turn off notifications", "Set specific goals" ]; const quotes = [ "Success is no accident – Pele", "Believe you can – Roosevelt", "Prepare today – Malcolm X", "Push yourself", "Leave comfort zone" ]; function fadeOut(element, callback) { element.style.transition = "opacity 0.5s"; element.style.opacity = 0; setTimeout(callback, 500); } function fadeIn(element, text) { element.textContent = text; element.style.transition = "opacity 0.5s"; element.style.opacity = 1; } function updateQuote() { const quoteEl = document.getElementById('quote-text'); fadeOut(quoteEl, () => { const newQuote = quotes[Math.floor(Math.random() * quotes.length)]; fadeIn(quoteEl, newQuote); }); } function updateStudyTip() { document.getElementById('tip-text').textContent = studyTips[Math.floor(Math.random() * studyTips.length)]; } updateStudyTip(); updateQuote(); setInterval(updateQuote, 10000); setInterval(updateStudyTip, 60000); const calendarEl = document.getElementById('calendar'); const calendarMonthEl = document.getElementById('calendar-month'); const holidays = [ { date: "2023-01-26", name: "Republic Day" }, { date: "2023-03-08", name: "Holi" }, { date: "2023-08-15", name: "Independence Day" }, { date: "2023-10-02", name: "Gandhi Jayanti" }, { date: "2024-01-26", name: "Republic Day" }, { date: "2024-03-25", name: "Holi" }, { date: "2024-08-15", name: "Independence Day" }, { date: "2024-10-02", name: "Gandhi Jayanti" } ]; function generateCalendar() { const year = selectedDate.getFullYear(); const month = selectedDate.getMonth(); const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0); const startWeekday = firstDay.getDay(); calendarMonthEl.textContent = `${firstDay.toLocaleString('default', { month: 'long' })}, ${year}`; calendarEl.innerHTML = ""; ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => { const headerCell = document.createElement("div"); headerCell.className = "calendar-header"; headerCell.textContent = day; calendarEl.appendChild(headerCell); }); for (let i = 0; i < startWeekday; i++) { calendarEl.appendChild(document.createElement("div")).className = "calendar-cell"; } const todayKey = getDateKey(new Date()); for (let d = 1; d <= lastDay.getDate(); d++) { const cellDate = new Date(year, month, d); const cellKey = getDateKey(cellDate); const cell = document.createElement("div"); cell.className = "calendar-cell"; cell.tabIndex = 0; cell.textContent = d; if (cellKey === getDateKey(selectedDate)) cell.classList.add('selected'); if (cellKey === todayKey) cell.classList.add('today'); holidays.forEach(holiday => { if (holiday.date === cellKey) { const tooltip = document.createElement("div"); tooltip.className = "tooltip"; tooltip.textContent = holiday.name; cell.appendChild(tooltip); } }); cell.addEventListener('click', () => { selectedDate = new Date(cellDate); updateDateDisplay(); renderTasks(); generateCalendar(); }); cell.addEventListener('keydown', (e) => { if (e.key === "Enter" || e.key === " ") { selectedDate = new Date(cellDate); updateDateDisplay(); renderTasks(); generateCalendar(); } }); calendarEl.appendChild(cell); } } generateCalendar(); const playSoundBtn = document.getElementById('play-sound'); const songOptionsDiv = document.getElementById('song-options'); const songOptions = document.querySelectorAll('.song-option'); const ytplayer = document.getElementById('ytplayer'); playSoundBtn.addEventListener('click', () => { songOptionsDiv.classList.toggle('visible'); playSoundBtn.setAttribute('aria-expanded', songOptionsDiv.classList.contains('visible')); }); function convertToEmbed(url) { try { const videoId = new URL(url).searchParams.get("v"); return `https://www.youtube.com/embed/${videoId}?autoplay=1`; } catch (error) { console.error('Error converting URL:', error); return url; } } songOptions.forEach(option => { option.addEventListener('click', () => { document.getElementById('player-container').style.display = "block"; ytplayer.src = convertToEmbed(option.dataset.url); }); });
+  </script>
 
-      updateChart();
-    }
+  <!-- THE MAGIC SCRIPT: All new features and enhancements are safely added here. -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-    function updateChart() {
-      if (chart) chart.destroy();
-      
-      const gradient = elements.ctx.createLinearGradient(0, 0, 0, elements.ctx.canvas.height);
-      gradient.addColorStop(0, '#667eea');
-      gradient.addColorStop(1, '#764ba2');
+      // --- 0. GLOBAL SAFE TOAST + TASK ID MIGRATION (non-invasive) ---
+      window.showToast = window.showToast || function(message) {
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) existingToast.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2900);
+      };
 
-      chart = new Chart(elements.ctx, {
-        type: 'bar',
-        data: {
-          labels: tests.map(t => t.name),
-          datasets: [{
-            label: 'Marks',
-            data: tests.map(t => t.marks),
-            backgroundColor: gradient,
-            borderColor: '#3730a3',
-            borderWidth: 2,
-            borderRadius: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
-            x: { grid: { display: false } }
-          },
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    function sortTests(order) {
-      tests.sort((a, b) => order === 'asc' ? a.marks - b.marks : b.marks - a.marks);
-      refreshList();
-    }
-
-    function refreshList() {
-      elements.marksList.innerHTML = '';
-      tests.forEach(test => addTestToList(test));
-    }
-
-    function exportCSV() {
-      const csvContent = tests.map(test => 
-        `${test.name},${test.marks},${test.totalMarks},${((test.marks/test.totalMarks)*100).toFixed(2)}`
-      ).join('\n');
-      
-      const blob = new Blob([`Test Name,Marks,Total,Percentage\n${csvContent}`], { type: 'text/csv' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'test_results.csv';
-      link.click();
-    }
-
-    function clearData() {
-      if (confirm('Clear all data?')) {
-        tests = [];
-        localStorage.removeItem('testSeriesData');
-        elements.marksList.innerHTML = '';
-        elements.analysis.innerHTML = '';
-        if (chart) chart.destroy();
+      function makeId() {
+        return Date.now() + Math.floor(Math.random() * 1000000);
       }
-    }
 
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark');
-      const isDark = document.body.classList.contains('dark');
-      elements.modeIcon.textContent = isDark ? '☀️' : '🌙';
-      elements.modeToggle.innerHTML = `<span id="mode-icon">${isDark ? '☀️' : '🌙'}</span> ${isDark ? 'Light' : 'Dark'} Mode`;
-    }
+      function isDateKey(key) {
+        return /^\d{4}-\d{2}-\d{2}$/.test(key);
+      }
 
-    function clearInputs() {
-      elements.testName.value = '';
-      elements.testMarks.value = '';
-    }
+      function migrateAllTasksToIds() {
+        // Walk through localStorage once and add ids where missing
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!isDateKey(key)) continue;
+          try {
+            const tasks = JSON.parse(localStorage.getItem(key)) || [];
+            let changed = false;
+            tasks.forEach(t => {
+              if (t && typeof t === 'object' && !('id' in t)) { t.id = makeId(); changed = true; }
+            });
+            if (changed) localStorage.setItem(key, JSON.stringify(tasks));
+          } catch (e) {}
+        }
+      }
+      migrateAllTasksToIds();
 
-    function saveTests() {
-      localStorage.setItem('testSeriesData', JSON.stringify(tests));
-    }
+      // Wrap getTasksForDate to always return tasks with ids
+      const _getTasksForDate = window.getTasksForDate;
+      window.getTasksForDate = function(date) {
+        let tasks = _getTasksForDate(date) || [];
+        let changed = false;
+        tasks.forEach(t => {
+          if (t && typeof t === 'object' && !('id' in t)) { t.id = makeId(); changed = true; }
+        });
+        if (changed) saveTasksForDate(date, tasks);
+        return tasks;
+      };
 
-    init();
+      // --- 1. DYNAMICALLY LOAD YOUTUBE API ---
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // --- 2. SETUP NEW UI ---
+      function initializePremiumUI() {
+        // Mobile Bottom Sheet
+        const sheetHTML = `<div class="music-bottom-sheet-overlay"><div class="music-bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="music-sheet-title"><div class="music-sheet-header"><h4 id="music-sheet-title">Choose a Stream</h4><button id="music-sheet-close" aria-label="Close">×</button></div><div id="mobile-song-list"></div></div></div>`;
+        document.body.insertAdjacentHTML('beforeend', sheetHTML);
+        
+        // Mini Player
+        const miniPlayerHTML = `<div id="mini-player"><div class="mini-player-info"><div id="mini-player-title">No song selected</div></div><div class="mini-player-controls"><button id="mini-player-play-pause" aria-label="Play or Pause">▶️</button><button id="mini-player-close" aria-label="Close Player">×</button></div></div>`;
+        document.body.insertAdjacentHTML('beforeend', miniPlayerHTML);
+
+        const mobileList = document.getElementById('mobile-song-list');
+        document.querySelectorAll('#song-options .song-option').forEach(originalOption => {
+            const clone = originalOption.cloneNode(true);
+            mobileList.appendChild(clone);
+        });
+      }
+      initializePremiumUI();
+
+      // --- 3. IMPLEMENT ENHANCED MUSIC PLAYER ---
+      let ytApiPlayer; let playerReady = false; let currentSongIndex = -1;
+      const allSongLists = [document.querySelectorAll('#song-options .song-option'), document.querySelectorAll('#mobile-song-list .song-option')];
+      const miniPlayer = document.getElementById('mini-player');
+      const mainPlayBtn = document.getElementById('play-sound').querySelector('.button-text');
+      const soundWaveHTML = `<div class="sound-wave"><span></span><span></span><span></span></div>`;
+      const originalBtnText = mainPlayBtn.textContent;
+
+      window.onYouTubeIframeAPIReady = function() {
+        ytApiPlayer = new YT.Player('ytplayer', {
+          playerVars: { 'playsinline': 1 },
+          events: {
+            'onReady': () => { playerReady = true; },
+            'onStateChange': onPlayerStateChange
+          }
+        });
+      };
+      
+      function onPlayerStateChange(event) {
+        const playerState = event.data;
+        updateMiniPlayerUI(playerState);
+        updateMainMusicButton(playerState);
+        if (playerState === YT.PlayerState.ENDED) {
+          playNextSong();
+        }
+      }
+
+      function loadAndPlaySong(index) {
+          if (!playerReady) return;
+          if (index < 0 || index >= allSongLists[0].length) return;
+          
+          document.getElementById('mini-player-title').textContent = 'Loading...';
+          currentSongIndex = index;
+          const songUrl = allSongLists[0][index].dataset.url;
+          try {
+            const videoId = new URL(songUrl).searchParams.get("v");
+            ytApiPlayer.loadVideoById(videoId, 0); // Start from beginning
+            updateActiveSongUI();
+            miniPlayer.classList.add('visible');
+          } catch(err){ console.error("Invalid YouTube URL:", songUrl); showToast("❌ Invalid song URL."); }
+      }
+      
+      function updateMiniPlayerUI(playerState) {
+          const miniPlayPauseBtn = document.getElementById('mini-player-play-pause');
+          const miniTitle = document.getElementById('mini-player-title');
+          
+          if (playerState === YT.PlayerState.PLAYING) {
+              miniPlayPauseBtn.textContent = '⏸️';
+              miniTitle.textContent = ytApiPlayer.getVideoData().title;
+          } else {
+              miniPlayPauseBtn.textContent = '▶️';
+          }
+      }
+
+      function updateMainMusicButton(playerState) {
+          if (playerState === YT.PlayerState.PLAYING) {
+              mainPlayBtn.innerHTML = soundWaveHTML;
+          } else {
+              mainPlayBtn.innerHTML = originalBtnText; // Use innerHTML to clear wave
+          }
+      }
+
+      function updateActiveSongUI() {
+          allSongLists.forEach(list => {
+              list.forEach((opt, i) => opt.classList.toggle('active', i === currentSongIndex));
+          });
+      }
+
+      function playNextSong() {
+          const nextIndex = (currentSongIndex + 1) % allSongLists[0].length;
+          loadAndPlaySong(nextIndex);
+      }
+      
+      // Event Listeners for player
+      document.getElementById('mini-player-play-pause').addEventListener('click', () => {
+        if (!ytApiPlayer) return;
+        const state = ytApiPlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) ytApiPlayer.pauseVideo();
+        else ytApiPlayer.playVideo();
+      });
+      document.getElementById('mini-player-close').addEventListener('click', () => {
+        if (ytApiPlayer) ytApiPlayer.stopVideo();
+        miniPlayer.classList.remove('visible');
+        currentSongIndex = -1;
+        updateActiveSongUI();
+        updateMainMusicButton(-1); // Reset main button text
+      });
+
+      allSongLists.forEach(list => {
+        list.forEach((option, index) => {
+            option.onclick = (e) => {
+                e.preventDefault(); e.stopPropagation();
+                loadAndPlaySong(index);
+                if (window.innerWidth <= 768) closeMusicSheet();
+            };
+        });
+      });
+      
+      // Mobile Bottom Sheet Controls
+      const musicSheetOverlay = document.querySelector('.music-bottom-sheet-overlay');
+      const musicSheet = document.querySelector('.music-bottom-sheet');
+      function closeMusicSheet() { musicSheetOverlay.classList.remove('visible'); musicSheet.classList.remove('visible'); }
+      document.getElementById('play-sound').addEventListener('click', (e) => {
+          if(window.innerWidth <= 768) {
+              e.preventDefault(); e.stopPropagation();
+              musicSheetOverlay.classList.add('visible'); musicSheet.classList.add('visible');
+          }
+      });
+      document.getElementById('music-sheet-close').addEventListener('click', closeMusicSheet);
+      musicSheetOverlay.addEventListener('click', (e) => { if (e.target === musicSheetOverlay) closeMusicSheet(); });
+
+      // --- 4. OVERRIDE & ENHANCE ORIGINAL FUNCTIONS (Task Management, etc.) ---
+      function applyCoreEnhancements() {
+        function showToast(message) { const existingToast = document.querySelector('.toast-notification'); if (existingToast) existingToast.remove(); const toast = document.createElement('div'); toast.className = 'toast-notification'; toast.textContent = message; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2900); }
+        function triggerConfetti() { const colors = ['#ff4444', '#ffa500', '#4CAF50', '#2575fc', '#6a11cb', '#c2e9fb']; for (let i = 0; i < 100; i++) { const confetti = document.createElement('div'); confetti.className = 'confetti'; confetti.style.left = Math.random() * 100 + 'vw'; confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; confetti.style.animationDelay = Math.random() * 0.5 + 's'; confetti.style.transform = `scale(${Math.random() * 0.8 + 0.5})`; document.body.appendChild(confetti); setTimeout(() => confetti.remove(), 3000); } }
+        taskList.insertAdjacentHTML('beforebegin', `<div class="task-overview"><div class="progress-container"><div class="progress-label" id="progress-label">Daily Progress</div><div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill"></div></div></div><select id="task-sort" aria-label="Sort tasks"><option value="default">Sort by: Default</option><option value="priority-desc">Priority (High-Low)</option><option value="priority-asc">Priority (Low-High)</option><option value="completed">Status (Completed)</option></select></div>`);
+        document.getElementById('task-sort').addEventListener('change', () => window.renderTasks());
+        // Note: keep original (bubble) listener intact; we'll add a capture-phase handler later to avoid duplicates.
+        taskForm.addEventListener('submit', (e) => { e.preventDefault(); const title = document.getElementById('task-title').value; const description = document.getElementById('task-desc').value; const priority = document.getElementById('task-priority').value; if (!title.trim() || !description.trim()) { showToast("❌ Please fill out all fields."); return; } const tasks = getTasksForDate(selectedDate); tasks.push({ id: Date.now(), title, description, priority, completed: false }); saveTasksForDate(selectedDate, tasks); window.renderTasks(); taskForm.reset(); showToast("👍 New task added!"); });
+        window.renderTasks = function() { let tasks = getTasksForDate(selectedDate); const sortValue = document.getElementById('task-sort').value; const priorityMap = { high: 3, medium: 2, low: 1 }; if (sortValue === 'priority-desc') { tasks.sort((a, b) => (priorityMap[b.priority] || 0) - (priorityMap[a.priority] || 0)); } else if (sortValue === 'priority-asc') { tasks.sort((a, b) => (priorityMap[a.priority] || 0) - (priorityMap[b.priority] || 0)); } else if (sortValue === 'completed') { tasks.sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1); } let filtered = tasks; if (searchQuery) { filtered = tasks.filter(task => task.title.toLowerCase().includes(searchQuery) || task.description.toLowerCase().includes(searchQuery)); } taskList.innerHTML = ''; let completedCount = 0; filtered.forEach((task) => { if (task.completed) completedCount++; const li = document.createElement('li'); li.className = `task-item ${task.priority || 'low'} ${task.completed ? 'completed' : ''}`; li.innerHTML = `<div class="task-header"><div style="display: flex; align-items: center; gap: 0.5rem; flex-grow: 1;"><input type="checkbox" id="task-check-${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})"><label for="task-check-${task.id}" class="task-title ${task.completed ? 'completed' : ''}">${escapeHTML(task.title)}</label></div><div class="task-controls"><button class="edit" onclick="editTask(${task.id})">Edit</button><button class="delete" onclick="deleteTask(${task.id})">Delete</button></div></div><p class="${task.completed ? 'completed' : ''}">${escapeHTML(task.description)}</p><span class="priority-indicator">${task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟠' : '🟢'} ${(task.priority || 'low').charAt(0).toUpperCase() + (task.priority || 'low').slice(1)}</span>`; taskList.appendChild(li); }); if (filtered.length === 0) { const li = document.createElement('li'); li.className = "task-item"; li.innerHTML = `<em>${searchQuery ? 'No tasks match your search.' : "No tasks for today. You're all clear!"}</em>`; taskList.appendChild(li); } const totalTasks = tasks.length; const progress = totalTasks > 0 ? (tasks.filter(t => t.completed).length / totalTasks) * 100 : 0; document.getElementById('progress-bar-fill').style.width = `${progress}%`; document.getElementById('progress-label').textContent = `Progress: ${tasks.filter(t => t.completed).length} of ${totalTasks} completed`; if (totalTasks > 0 && progress === 100) { if(!window.confettiFired) { triggerConfetti(); showToast("🎉 All tasks completed! You're amazing!"); window.confettiFired = true; } } else { window.confettiFired = false; } };
+        window.toggleTask = function(taskId) { const tasks = getTasksForDate(selectedDate); const taskIndex = tasks.findIndex(t => t.id === taskId); if (taskIndex > -1) { tasks[taskIndex].completed = !tasks[taskIndex].completed; saveTasksForDate(selectedDate, tasks); renderTasks(); } };
+        window.deleteTask = function(taskId) { if (confirm("Are you sure you want to delete this task?")) { let tasks = getTasksForDate(selectedDate); tasks = tasks.filter(t => t.id !== taskId); saveTasksForDate(selectedDate, tasks); renderTasks(); showToast("🗑️ Task deleted."); } };
+        window.editTask = function(taskId) { const tasks = getTasksForDate(selectedDate); const taskIndex = tasks.findIndex(t => t.id === taskId); if(taskIndex === -1) return; const task = tasks[taskIndex]; const modalHTML = `<div class="edit-modal-overlay"><div class="edit-modal-content" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title"><h3 id="edit-modal-title">Edit Task</h3><div class="form-group"><label for="edit-title">Task Title</label><input type="text" id="edit-title" value="${escapeHTML(task.title)}" required></div><div class="form-group"><label for="edit-desc">Description</label><textarea id="edit-desc" rows="3" required>${escapeHTML(task.description)}</textarea></div><div class="form-group"><label for="edit-priority">Priority</label><select id="edit-priority"><option value="high" ${task.priority === 'high' ? 'selected' : ''}>🔴 High</option><option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>🟠 Medium</option><option value="low" ${task.priority === 'low' ? 'selected' : ''}>🟢 Low</option></select></div><div class="edit-modal-controls"><button class="cancel-btn">Cancel</button><button class="save-btn">Save Changes</button></div></div></div>`; document.body.insertAdjacentHTML('beforeend', modalHTML); const overlay = document.querySelector('.edit-modal-overlay'); overlay.querySelector('.save-btn').onclick = () => { tasks[taskIndex].title = document.getElementById('edit-title').value; tasks[taskIndex].description = document.getElementById('edit-desc').value; tasks[taskIndex].priority = document.getElementById('edit-priority').value; saveTasksForDate(selectedDate, tasks); renderTasks(); showToast("✅ Task updated successfully!"); overlay.remove(); }; const cancelAction = () => overlay.remove(); overlay.querySelector('.cancel-btn').onclick = cancelAction; overlay.onclick = (e) => { if (e.target === overlay) cancelAction(); }; };
+        window.generateCalendar = function() { const year = selectedDate.getFullYear(); const month = selectedDate.getMonth(); const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0); const startWeekday = firstDay.getDay(); calendarMonthEl.textContent = `${firstDay.toLocaleString('default', { month: 'long' })}, ${year}`; calendarEl.innerHTML = ""; ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => { const headerCell = document.createElement("div"); headerCell.className = "calendar-header"; headerCell.textContent = day; calendarEl.appendChild(headerCell); }); for (let i = 0; i < startWeekday; i++) { calendarEl.appendChild(document.createElement("div")).className = "calendar-cell"; } const todayKey = getDateKey(new Date()); for (let d = 1; d <= lastDay.getDate(); d++) { const cellDate = new Date(year, month, d); const cellKey = getDateKey(cellDate); const cell = document.createElement("div"); cell.className = "calendar-cell"; cell.tabIndex = 0; cell.textContent = d; cell.setAttribute('aria-label', `${cellDate.toLocaleDateString(undefined, {month: 'long', day: 'numeric'})}`); if (cellKey === getDateKey(selectedDate)) cell.classList.add('selected'); if (cellKey === todayKey) cell.classList.add('today'); if (getTasksForDate(cellDate).length > 0) { cell.classList.add('has-tasks'); } holidays.forEach(holiday => { if (holiday.date === cellKey) { const tooltip = document.createElement("div"); tooltip.className = "tooltip"; tooltip.textContent = holiday.name; cell.appendChild(tooltip); } }); cell.addEventListener('click', () => { selectedDate = new Date(cellDate); updateDateDisplay(); renderTasks(); generateCalendar(); }); cell.addEventListener('keydown', (e) => { if (e.key === "Enter" || e.key === " ") { selectedDate = new Date(cellDate); updateDateDisplay(); renderTasks(); generateCalendar(); } }); calendarEl.appendChild(cell); } }
+      }
+      applyCoreEnhancements();
+
+      // --- 4b. CAPTURE-PHASE SUBMIT HANDLER to prevent duplicate adds ---
+      // This intercepts submit before other listeners (including the original one) to avoid double-adding tasks.
+      taskForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        const titleEl = document.getElementById('task-title');
+        const descEl = document.getElementById('task-desc');
+        const priorityEl = document.getElementById('task-priority');
+        const title = titleEl.value;
+        const description = descEl.value;
+        const priority = priorityEl.value;
+        if (!title.trim() || !description.trim()) {
+          window.showToast("❌ Please fill out all fields.");
+          return;
+        }
+        const tasks = getTasksForDate(selectedDate);
+        tasks.push({ id: Date.now() + Math.floor(Math.random()*1000000), title, description, priority, completed: false });
+        saveTasksForDate(selectedDate, tasks);
+        if (typeof window.renderTasks === 'function') window.renderTasks();
+        taskForm.reset();
+        window.showToast("👍 New task added!");
+      }, true); // capture
+
+      // --- 4c. ROBUST HANDLERS: support both id and index (backward compatible) ---
+      window.toggleTask = function(identifier) {
+        const tasks = getTasksForDate(selectedDate);
+        let idx = tasks.findIndex(t => t && t.id === identifier);
+        if (idx === -1 && typeof identifier === 'number' && tasks[identifier]) idx = identifier;
+        if (idx > -1) {
+          tasks[idx].completed = !tasks[idx].completed;
+          saveTasksForDate(selectedDate, tasks);
+          if (typeof renderTasks === 'function') renderTasks();
+        }
+      };
+
+      window.deleteTask = function(identifier) {
+        if (!confirm("Are you sure you want to delete this task?")) return;
+        let tasks = getTasksForDate(selectedDate);
+        if (tasks.some(t => t && t.id === identifier)) {
+          tasks = tasks.filter(t => t && t.id !== identifier);
+        } else if (typeof identifier === 'number' && tasks[identifier]) {
+          tasks.splice(identifier, 1);
+        }
+        saveTasksForDate(selectedDate, tasks);
+        if (typeof renderTasks === 'function') renderTasks();
+        window.showToast("🗑️ Task deleted.");
+      };
+
+      window.editTask = function(identifier) {
+        const tasks = getTasksForDate(selectedDate);
+        let taskIndex = tasks.findIndex(t => t && t.id === identifier);
+        if (taskIndex === -1 && typeof identifier === 'number' && tasks[identifier]) taskIndex = identifier;
+        if (taskIndex === -1) { window.showToast("⚠️ Task not found."); return; }
+        const task = tasks[taskIndex];
+
+        const modalHTML = `<div class="edit-modal-overlay">
+          <div class="edit-modal-content" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+            <h3 id="edit-modal-title">Edit Task</h3>
+            <div class="form-group">
+              <label for="edit-title">Task Title</label>
+              <input type="text" id="edit-title" value="${escapeHTML(task.title || '')}" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-desc">Description</label>
+              <textarea id="edit-desc" rows="3" required>${escapeHTML(task.description || '')}</textarea>
+            </div>
+            <div class="form-group">
+              <label for="edit-priority">Priority</label>
+              <select id="edit-priority">
+                <option value="high" ${task.priority === 'high' ? 'selected' : ''}>🔴 High</option>
+                <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>🟠 Medium</option>
+                <option value="low" ${task.priority === 'low' ? 'selected' : ''}>🟢 Low</option>
+              </select>
+            </div>
+            <div class="edit-modal-controls">
+              <button class="cancel-btn">Cancel</button>
+              <button class="save-btn">Save Changes</button>
+            </div>
+          </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        const overlay = document.querySelector('.edit-modal-overlay');
+
+        const commitSave = () => {
+          const newTitle = document.getElementById('edit-title').value.trim();
+          const newDesc = document.getElementById('edit-desc').value.trim();
+          const newPriority = document.getElementById('edit-priority').value;
+          if (!newTitle || !newDesc) { window.showToast("❌ Please fill out all fields."); return; }
+          tasks[taskIndex].title = newTitle;
+          tasks[taskIndex].description = newDesc;
+          tasks[taskIndex].priority = newPriority;
+          saveTasksForDate(selectedDate, tasks);
+          if (typeof renderTasks === 'function') renderTasks();
+          window.showToast("✅ Task updated successfully!");
+          overlay.remove();
+        };
+
+        overlay.querySelector('.save-btn').onclick = commitSave;
+        overlay.querySelector('.cancel-btn').onclick = () => overlay.remove();
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+        overlay.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') overlay.remove();
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') commitSave();
+        });
+        setTimeout(() => { const t = document.getElementById('edit-title'); if (t) t.focus(); }, 0);
+      };
+
+      // --- 5. INITIALIZE THE APP WITH ALL ENHANCEMENTS ---
+      renderTasks();
+      generateCalendar();
+    });
   </script>
 </body>
 </html>
