@@ -165,6 +165,8 @@
 
     .task-meta { display:flex; align-items:center; gap: 0.5rem; margin-top: 0.4rem; flex-wrap: wrap; }
     .task-meta .due { font-size: 0.85rem; padding: 2px 8px; border-radius: 999px; background: rgba(37,117,252,0.1); border: 1px solid rgba(37,117,252,0.2); }
+    .task-meta .due.soon { background: rgba(255, 191, 0, 0.15); border-color: rgba(255, 191, 0, 0.35); }
+    .task-meta .due.overdue { background: rgba(255, 86, 86, 0.15); border-color: rgba(255, 86, 86, 0.35); }
     .task-tags { display:flex; gap: 0.35rem; flex-wrap: wrap; }
     .task-tags .tag-chip { background: rgba(0,0,0,0.06); border: none; padding: 3px 8px; border-radius: 999px; font-size: 0.8rem; }
     body.dark .task-tags .tag-chip { background: rgba(255,255,255,0.08); }
@@ -198,7 +200,7 @@
       font-weight: 600; margin-bottom: 1rem;
     }
     #calendar {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+      display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px;
     }
     .calendar-cell {
       background: #f4f4f4; padding: 0.55rem; text-align: center;
@@ -222,6 +224,7 @@
     .calendar-header {
       font-weight: 600; background: #ddd; padding: 0.55rem;
       border-radius: 10px; text-align: center; font-size: 0.9rem;
+      aspect-ratio: auto; /* header cells not square */
     }
     body.dark .calendar-header { background: #555; }
 
@@ -283,7 +286,9 @@
       .priority-indicator { font-size: 0.7rem; }
       .feature-box { padding: 1rem; }
       .feature-box h3 { font-size: 1.1rem; }
-      .calendar-cell { font-size: 0.85rem; padding: 0.35rem; }
+      #calendar { gap: 4px; }
+      .calendar-cell { font-size: 0.82rem; padding: 0.35rem; border-radius: 8px; }
+      .calendar-header { font-size: 0.78rem; padding: 0.4rem; border-radius: 8px; }
       #play-sound { padding: 0.75rem 1rem; font-size: 14px; }
       .song-option { padding: 8px; font-size: 0.9rem; }
       #dark-mode-toggle { padding: 8px 12px; font-size: 14px; bottom: 10px; right: 10px; }
@@ -331,11 +336,11 @@
     }
     
     /* 2. Enhanced Button & Interactive Element Hovers */
-    .nav-btn, button.add-task, #dark-mode-toggle, #play-sound, .task-controls button, .edit-modal-controls button {
+    .nav-btn, button.add-task, #dark-mode-toggle, #play-sound, .task-controls button, .edit-modal-controls button, .quick-due button {
       background-size: 200% auto !important;
       transition: all 0.4s ease !important;
     }
-    .nav-btn:hover, button.add-task:hover, #dark-mode-toggle:hover, #play-sound:hover, .task-controls button:hover, .edit-modal-controls button:hover {
+    .nav-btn:hover, button.add-task:hover, #dark-mode-toggle:hover, #play-sound:hover, .task-controls button:hover, .edit-modal-controls button:hover, .quick-due button:hover {
       background-position: right center !important;
       transform: scale(1.05);
     }
@@ -466,6 +471,18 @@
     /* 7. Ripple effect */
     .ripple { position:absolute; border-radius:50%; transform: scale(0); animation: ripple 600ms linear; background: rgba(255,255,255,0.6); pointer-events: none; }
     @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+    /* 8. Quick Due Chips (cool UI) */
+    .quick-due { display:flex; flex-wrap: wrap; gap: 0.5rem; }
+    .quick-due button {
+      border: none; cursor: pointer; padding: 0.4rem 0.7rem; border-radius: 999px;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb); color: #123;
+      font-weight: 600; font-size: 0.85rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+    .quick-due button.active { background: linear-gradient(135deg, #6a11cb, #2575fc); color: #fff; }
+    body.dark .quick-due button { color: #eee; background: linear-gradient(135deg, #3b3b3b, #555); }
+    body.dark .quick-due button.active { background: linear-gradient(135deg, #0f2027, #203a43); }
   </style>
 </head>
 <body>
@@ -503,6 +520,15 @@
             <div class="form-group">
               <label for="task-due">Due time</label>
               <input type="time" id="task-due">
+            </div>
+            <div class="form-group">
+              <label>Quick due</label>
+              <div class="quick-due" id="quick-due-add">
+                <button type="button" data-mins="30">30m</button>
+                <button type="button" data-mins="60">1h</button>
+                <button type="button" data-mins="120">2h</button>
+                <button type="button" data-mins="240">4h</button>
+              </div>
             </div>
             <div class="form-group">
               <label for="task-tags">Tags (comma separated)</label>
@@ -1052,12 +1078,44 @@
       document.getElementById('music-sheet-close').addEventListener('click', closeMusicSheet);
       musicSheetOverlay.addEventListener('click', (e) => { if (e.target === musicSheetOverlay) closeMusicSheet(); });
 
+      // --- Helpers for quick due chips and countdowns ---
+      function toHHMM(dateObj) {
+        const pad = n => (n < 10 ? '0' + n : '' + n);
+        return `${pad(dateObj.getHours())}:${pad(dateObj.getMinutes())}`;
+      }
+      function timeFromNowPlusMins(mins) {
+        const d = new Date();
+        d.setMinutes(d.getMinutes() + mins);
+        return toHHMM(d);
+      }
+      function msUntilDue(selectedDate, dueTime) {
+        if (!dueTime) return null;
+        const now = new Date();
+        const [hh, mm] = dueTime.split(':').map(n => parseInt(n || 0, 10));
+        const due = new Date(selectedDate);
+        due.setHours(hh || 0, mm || 0, 0, 0);
+        return due.getTime() - now.getTime();
+      }
+      function humanizeMs(ms) {
+        const sign = ms < 0 ? -1 : 1;
+        ms = Math.abs(ms);
+        const mins = Math.round(ms / 60000);
+        const d = Math.floor(mins / (60*24));
+        const h = Math.floor((mins % (60*24)) / 60);
+        const m = mins % 60;
+        let out = [];
+        if (d) out.push(d + 'd');
+        if (h) out.push(h + 'h');
+        out.push(m + 'm');
+        return (sign < 0 ? 'overdue ' : 'in ') + out.join(' ');
+      }
+
       // --- 4. OVERRIDE & ENHANCE ORIGINAL FUNCTIONS (Task Management, etc.) ---
       function applyCoreEnhancements() {
         function showToast(message) { const existingToast = document.querySelector('.toast-notification'); if (existingToast) existingToast.remove(); const toast = document.createElement('div'); toast.className = 'toast-notification'; toast.textContent = message; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2900); }
         function triggerConfetti() { const colors = ['#ff4444', '#ffa500', '#4CAF50', '#2575fc', '#6a11cb', '#c2e9fb']; for (let i = 0; i < 100; i++) { const confetti = document.createElement('div'); confetti.className = 'confetti'; confetti.style.left = Math.random() * 100 + 'vw'; confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; confetti.style.animationDelay = Math.random() * 0.5 + 's'; confetti.style.transform = `scale(${Math.random() * 0.8 + 0.5})`; document.body.appendChild(confetti); setTimeout(() => confetti.remove(), 3000); } }
 
-        // Overview + sort
+        // Overview + sort (keep if not present)
         if (!document.getElementById('task-sort')) {
           taskList.insertAdjacentHTML('beforebegin', `
           <div class="task-overview">
@@ -1077,7 +1135,7 @@
           document.getElementById('task-sort').addEventListener('change', () => window.renderTasks());
         }
 
-        // Bubble-phase submit (kept for compatibility, but capture listener will stop propagation)
+        // Bubble-phase submit (kept; capture listener will stop propagation)
         taskForm.addEventListener('submit', (e) => {
           e.preventDefault();
           const title = document.getElementById('task-title').value;
@@ -1092,15 +1150,15 @@
           showToast("👍 New task added!");
         });
 
-        // Enhanced renderTasks with tags, due time, pinned, subtasks
+        // Enhanced renderTasks with tags, due time (with countdown), pinned, subtasks
         window.renderTasks = function() {
           let tasks = getTasksForDate(selectedDate);
 
           const sortValue = document.getElementById('task-sort') ? document.getElementById('task-sort').value : 'default';
           const priorityMap = { high: 3, medium: 2, low: 1 };
 
-          // Sort base
-          tasks.sort((a,b) => (b.pinned === true) - (a.pinned === true)); // pinned first always
+          // Sort base: pinned first
+          tasks.sort((a,b) => (b.pinned === true) - (a.pinned === true));
           if (sortValue === 'priority-desc') {
             tasks.sort((a, b) => ((priorityMap[b.priority] || 0) - (priorityMap[a.priority] || 0)));
           } else if (sortValue === 'priority-asc') {
@@ -1113,7 +1171,7 @@
               const bt = b.dueTime ? b.dueTime : '99:99';
               return at.localeCompare(bt);
             });
-          } // default maintains pinned-first from initial sort
+          }
 
           // Filter
           let filtered = tasks;
@@ -1140,7 +1198,11 @@
             li.setAttribute('data-id', task.id);
 
             const tagChips = (task.tags || []).map(t => `<span class="tag-chip">#${escapeHTML(t)}</span>`).join(' ');
-            const dueHtml = task.dueTime ? `<span class="due">⏰ ${escapeHTML(task.dueTime)}</span>` : '';
+            const msLeft = typeof task.dueTime === 'string' && task.dueTime ? msUntilDue(selectedDate, task.dueTime) : null;
+            const dueClass = msLeft == null ? '' : (msLeft < 0 ? 'overdue' : msLeft < 60*60000 ? 'soon' : '');
+            const dueLabel = task.dueTime ? `⏰ ${escapeHTML(task.dueTime)}` : '';
+            const countdown = msLeft == null ? '' : ` <small style="opacity:.8;">(${humanizeMs(msLeft)})</small>`;
+            const dueHtml = task.dueTime ? `<span class="due ${dueClass}">${dueLabel}${countdown}</span>` : '';
             const subHtml = totalSub ? `<span class="subtask-progress">☑️ ${doneSub}/${totalSub}</span>` : '';
 
             li.innerHTML = `
@@ -1240,7 +1302,7 @@
           window.showToast("🗑️ Task deleted.");
         };
 
-        // Upgraded Edit Task Modal (aesthetic + features)
+        // Upgraded Edit Task Modal (includes Quick Due chips)
         window.editTask = function(identifier) {
           const tasks = getTasksForDate(selectedDate);
           let taskIndex = tasks.findIndex(t => t && t.id === identifier);
@@ -1275,6 +1337,12 @@
                   <div class="form-group">
                     <label for="edit-due">Due time</label>
                     <input type="time" id="edit-due" value="${escapeHTML(task.dueTime || '')}">
+                    <div class="quick-due" id="quick-due-edit" style="margin-top:0.35rem;">
+                      <button type="button" data-mins="30">30m</button>
+                      <button type="button" data-mins="60">1h</button>
+                      <button type="button" data-mins="120">2h</button>
+                      <button type="button" data-mins="240">4h</button>
+                    </div>
                   </div>
                   <div class="form-group modal-row--full">
                     <label>Tags</label>
@@ -1322,6 +1390,9 @@
           const subtasksList = overlay.querySelector('#subtasks-list');
           const newSubInput = overlay.querySelector('#new-subtask-text');
           const addSubBtn = overlay.querySelector('#add-subtask-btn');
+
+          // Quick-due chips for modal
+          attachQuickDueHandlers(overlay.querySelector('#quick-due-edit'), overlay.querySelector('#edit-due'));
 
           // Tags interactions
           function refreshTagsEvents() {
@@ -1415,7 +1486,7 @@
           setTimeout(() => { const t = document.getElementById('edit-title'); if (t) t.focus(); }, 0);
         };
 
-        // Calendar upgrade: dots + progress + tooltip contents
+        // Calendar upgrade: fixed 6-week grid (fills trailing cells) + dots + progress + tooltip contents
         window.generateCalendar = function() {
           const year = selectedDate.getFullYear();
           const month = selectedDate.getMonth();
@@ -1474,17 +1545,14 @@
               progress.innerHTML = `<span style="width:${ratio}%"></span>`;
               cell.appendChild(progress);
 
-              // Tooltip with summary
               const tip = document.createElement('div');
               tip.className = 'tooltip';
               const topTasks = tasks.slice(0,3).map(t => `${t.completed ? '✅' : '•'} ${escapeHTML(t.title)}`).join('<br>');
               const more = tasks.length > 3 ? `<br>+${tasks.length-3} more` : '';
-              // Merge holiday if present
               const holiday = holidays.find(h => h.date === cellKey);
               tip.innerHTML = `${holiday ? '🎉 ' + holiday.name + '<br>' : ''}${topTasks}${more}`;
               cell.appendChild(tip);
             } else {
-              // If holiday-only tooltip
               const holiday = holidays.find(h => h.date === cellKey);
               if (holiday) {
                 const tooltip = document.createElement("div");
@@ -1507,11 +1575,35 @@
 
             calendarEl.appendChild(cell);
           }
+
+          // Fill trailing cells to keep 6 rows (fixed mobile view)
+          const totalDayCells = startWeekday + lastDay.getDate();
+          const cellsNeeded = 42 - totalDayCells; // 6 weeks * 7 days
+          for (let i = 0; i < cellsNeeded; i++) {
+            calendarEl.appendChild(document.createElement('div')).className = "calendar-cell";
+          }
         }
       }
       applyCoreEnhancements();
 
-      // --- 4b. CAPTURE-PHASE SUBMIT HANDLER to prevent duplicate adds (now includes advanced fields) ---
+      // Quick-due chips for Add form
+      function attachQuickDueHandlers(container, inputEl) {
+        if (!container || !inputEl) return;
+        container.querySelectorAll('button[data-mins]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const mins = parseInt(btn.dataset.mins || '0', 10);
+            const timeStr = timeFromNowPlusMins(mins);
+            inputEl.value = timeStr;
+            container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window.showToast(`⏰ Due set to ${timeStr}`);
+          });
+        });
+      }
+      attachQuickDueHandlers(document.getElementById('quick-due-add'), document.getElementById('task-due'));
+
+      // --- 4b. CAPTURE-PHASE SUBMIT HANDLER to prevent duplicate adds (includes advanced fields) ---
       taskForm.addEventListener('submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1547,6 +1639,9 @@
         if (typeof window.renderTasks === 'function') window.renderTasks();
         taskForm.reset();
         window.showToast("👍 New task added!");
+        // Reset quick-due active state
+        const qd = document.getElementById('quick-due-add');
+        if (qd) qd.querySelectorAll('button').forEach(b => b.classList.remove('active'));
       }, true); // capture
 
       // --- 4c. Robust Handlers preserved (compatibility) ---
@@ -1574,8 +1669,6 @@
         window.showToast("🗑️ Task deleted.");
       };
 
-      // Replace editTask with advanced modal (compat already handled above)
-
       // --- 5. Due-time Reminder (today only) ---
       function isSameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
       setInterval(() => {
@@ -1596,8 +1689,8 @@
         if (changed) saveTasksForDate(selectedDate, tasks);
       }, 30000);
 
-      // --- 6. Ripple effect on buttons ---
-      const rippleSelectors = ['.nav-btn', 'button.add-task', '#dark-mode-toggle', '#play-sound', '.task-controls button', '.edit-modal-controls button'];
+      // --- 6. Ripple effect on buttons (include quick-due) ---
+      const rippleSelectors = ['.nav-btn', 'button.add-task', '#dark-mode-toggle', '#play-sound', '.task-controls button', '.edit-modal-controls button', '.quick-due button'];
       document.addEventListener('click', function(e) {
         const btn = e.target.closest(rippleSelectors.join(','));
         if (!btn) return;
@@ -1609,14 +1702,17 @@
         circle.style.width = circle.style.height = `${diameter}px`;
         circle.style.left = `${e.clientX - rect.left - radius}px`;
         circle.style.top = `${e.clientY - rect.top - radius}px`;
-        // remove any existing ripple
         const existing = btn.querySelector('.ripple');
         if (existing) existing.remove();
         btn.appendChild(circle);
         setTimeout(() => circle.remove(), 600);
       });
 
-      // --- 7. Initialize ---
+      // --- 7. Auto-refresh countdowns every minute (no flicker) ---
+      if (window.__countdownInterval) clearInterval(window.__countdownInterval);
+      window.__countdownInterval = setInterval(() => { if (typeof renderTasks === 'function') renderTasks(); }, 60000);
+
+      // --- 8. Initialize ---
       renderTasks();
       generateCalendar();
     });
